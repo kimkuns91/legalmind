@@ -82,14 +82,14 @@ const SignInForm = () => {
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-      
+
       // 구글 로그인 시도 - 성공 시 리다이렉션 발생
       await loginWithGoogle();
-      
+
       // 리다이렉션이 발생하므로 아래 코드는 실행되지 않음
     } catch (error) {
       // 리다이렉션 에러가 아닌 경우에만 오류 메시지 표시
-      if (!((error as { digest?: string })?.digest?.includes("NEXT_REDIRECT"))) {
+      if (!(error as { digest?: string })?.digest?.includes("NEXT_REDIRECT")) {
         toast.error(t("validation.googleLoginFailed"));
       }
     } finally {
@@ -100,14 +100,15 @@ const SignInForm = () => {
   const handleKakaoSignIn = async () => {
     try {
       setIsLoading(true);
-      
+
       // 카카오 로그인 시도 - 성공 시 리다이렉션 발생
       await loginWithKakao();
-      
+
       // 리다이렉션이 발생하므로 아래 코드는 실행되지 않음
     } catch (error) {
+      toast.error(t("validation.kakaoLoginFailed"));
       // 리다이렉션 에러가 아닌 경우에만 오류 메시지 표시
-      if (!((error as { digest?: string })?.digest?.includes("NEXT_REDIRECT"))) {
+      if (!(error as { digest?: string })?.digest?.includes("NEXT_REDIRECT")) {
         toast.error(t("validation.kakaoLoginFailed"));
       }
     } finally {

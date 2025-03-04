@@ -104,6 +104,7 @@ export const authConfig = {
   },
   pages: {
     signIn: "/login",
+    error: "/auth/error",
   },
   callbacks: {
     async session({ session, token }: { session: Session; token: JWT }) {

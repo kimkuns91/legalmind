@@ -2,24 +2,43 @@
 
 import * as Yup from "yup";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ErrorMessage, Field, Form, Formik, FormikHelpers } from "formik";
-import { FaEnvelope, FaLock, FaUser } from "react-icons/fa";
-import { loginWithGoogle, loginWithKakao, registerUser } from "@/actions/auth";
+import {
+  ErrorMessage,
+  Field,
+  FieldInputProps,
+  Form,
+  Formik,
+  FormikHelpers,
+} from "formik";
+import {
+  loginWithGoogle,
+  loginWithKakao,
+  registerUser,
+} from "@/actions/auth";
 
 import { Button } from "@/components/ui/button";
+import { FcGoogle } from "react-icons/fc";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { Separator } from "@/components/ui/separator";
-import { toast as hotToast } from "react-hot-toast";
+import { RiKakaoTalkFill } from "react-icons/ri";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
+interface ISignUpValues {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 const SignUpForm = () => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
   const t = useTranslations("SignUpForm");
+  const [isLoading, setIsLoading] = useState(false);
 
   // 회원가입 폼 유효성 검증 스키마
   const SignUpSchema = Yup.object().shape({
@@ -34,21 +53,6 @@ const SignUpForm = () => {
       .oneOf([Yup.ref("password")], t("validation.passwordMatch"))
       .required(t("validation.confirmPasswordRequired")),
   });
-
-  // 회원가입 폼 초기값
-  const initialValues = {
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  };
-
-  interface ISignUpValues {
-    name: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-  }
 
   const handleSignUp = async (
     values: ISignUpValues,
@@ -65,17 +69,17 @@ const SignUpForm = () => {
       );
 
       if (result.success) {
-        hotToast.success(t("validation.signupSuccess"));
+        toast.success(t("validation.signupSuccess"));
         
         // 회원가입 성공 후 로그인 페이지로 이동
         router.push("/login");
         router.refresh();
       } else {
-        hotToast.error(result.error || "회원가입에 실패했습니다.");
+        toast.error(result.error || "회원가입에 실패했습니다.");
       }
     } catch (error) {
       if (error instanceof Error) {
-        hotToast.error(error.message);
+        toast.error(error.message);
       }
     } finally {
       setIsLoading(false);
@@ -86,14 +90,16 @@ const SignUpForm = () => {
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-      const result = await loginWithGoogle("/");
       
-      if (!result.success) {
-        hotToast.error(t("validation.googleLoginFailed"));
-      }
+      // 구글 로그인 시도 - 성공 시 리다이렉션 발생
+      await loginWithGoogle();
+      
+      // 리다이렉션이 발생하므로 아래 코드는 실행되지 않음
     } catch (error) {
-      hotToast.error(t("validation.googleLoginFailed"));
-      console.error("Google login error:", error);
+      // 리다이렉션 에러가 아닌 경우에만 오류 메시지 표시
+      if (!((error as { digest?: string })?.digest?.includes("NEXT_REDIRECT"))) {
+        toast.error(t("validation.googleLoginFailed"));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -102,165 +108,252 @@ const SignUpForm = () => {
   const handleKakaoSignIn = async () => {
     try {
       setIsLoading(true);
-      const result = await loginWithKakao("/");
       
-      if (!result.success) {
-        hotToast.error(t("validation.kakaoLoginFailed"));
-      }
+      // 카카오 로그인 시도 - 성공 시 리다이렉션 발생
+      await loginWithKakao();
+      
+      // 리다이렉션이 발생하므로 아래 코드는 실행되지 않음
     } catch (error) {
-      hotToast.error(t("validation.kakaoLoginFailed"));
-      console.error("Kakao login error:", error);
+      // 리다이렉션 에러가 아닌 경우에만 오류 메시지 표시
+      if (!((error as { digest?: string })?.digest?.includes("NEXT_REDIRECT"))) {
+        toast.error(t("validation.kakaoLoginFailed"));
+      }
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">
-          {t("title")}
-        </CardTitle>
-        <CardDescription className="text-center">
-          {t("subtitle")}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Formik
-          initialValues={initialValues}
-          validationSchema={SignUpSchema}
-          onSubmit={handleSignUp}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="w-full">
+        {/* 소셜 로그인 버튼 */}
+        <motion.div
+          className="flex flex-col space-y-3 mb-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
         >
-          {({ isSubmitting }) => (
-            <Form className="space-y-4">
-              <div className="space-y-2">
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                    <FaUser />
-                  </div>
-                  <Field
-                    as={Input}
-                    type="text"
-                    name="name"
-                    placeholder={t("namePlaceholder")}
-                    className="pl-10"
-                  />
-                </div>
-                <ErrorMessage
-                  name="name"
-                  component="div"
-                  className="text-sm text-red-500"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                    <FaEnvelope />
-                  </div>
-                  <Field
-                    as={Input}
-                    type="email"
-                    name="email"
-                    placeholder={t("email")}
-                    className="pl-10"
-                  />
-                </div>
-                <ErrorMessage
-                  name="email"
-                  component="div"
-                  className="text-sm text-red-500"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                    <FaLock />
-                  </div>
-                  <Field
-                    as={Input}
-                    type="password"
-                    name="password"
-                    placeholder={t("password")}
-                    className="pl-10"
-                  />
-                </div>
-                <ErrorMessage
-                  name="password"
-                  component="div"
-                  className="text-sm text-red-500"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
-                    <FaLock />
-                  </div>
-                  <Field
-                    as={Input}
-                    type="password"
-                    name="confirmPassword"
-                    placeholder={t("confirmPassword")}
-                    className="pl-10"
-                  />
-                </div>
-                <ErrorMessage
-                  name="confirmPassword"
-                  component="div"
-                  className="text-sm text-red-500"
-                />
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isSubmitting || isLoading}
-              >
-                {isLoading ? "Loading..." : t("signupButton")}
-              </Button>
-            </Form>
-          )}
-        </Formik>
-
-        <div className="mt-4 text-center">
-          <div className="flex items-center">
-            <Separator className="flex-grow" />
-            <span className="mx-2 text-xs text-gray-400">{t("or")}</span>
-            <Separator className="flex-grow" />
-          </div>
-        </div>
-
-        <div className="mt-4 space-y-2">
           <Button
             type="button"
-            variant="outline"
-            className="w-full"
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-          >
-            {t("googleLogin")}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
             onClick={handleKakaoSignIn}
             disabled={isLoading}
+            className={cn(
+              "w-full h-12 bg-[#FEE500] hover:bg-[#FDD835] text-black font-medium",
+              "flex items-center justify-center cursor-pointer",
+              "transition-all duration-200 shadow-sm hover:shadow-md",
+              "sm:text-base text-sm"
+            )}
           >
-            {t("kakaoLogin")}
+            {isLoading ? (
+              <span className="flex items-center justify-center">
+                <span className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
+                로그인 중...
+              </span>
+            ) : (
+              <>
+                <RiKakaoTalkFill className="mr-2 h-5 w-5" />
+                <span>카카오 계정으로 회원가입</span>
+              </>
+            )}
           </Button>
-        </div>
 
-        <div className="mt-4 text-center text-sm">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+            className={cn(
+              "w-full h-12 bg-background dark:bg-white text-foreground dark:text-black",
+              "border border-gray-300 dark:border-gray-300 hover:bg-accent",
+              "font-medium flex items-center justify-center cursor-pointer",
+              "transition-all duration-200 shadow-sm hover:shadow-md",
+              "sm:text-base text-sm"
+            )}
+          >
+            {isLoading ? (
+              <span className="flex items-center justify-center">
+                <span className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
+                로그인 중...
+              </span>
+            ) : (
+              <>
+                <FcGoogle className="mr-2 h-5 w-5" />
+                <span>구글 계정으로 회원가입</span>
+              </>
+            )}
+          </Button>
+        </motion.div>
+
+        {/* 또는 구분선 */}
+        <motion.div
+          className="relative flex items-center justify-center my-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <div className="absolute border-t border-gray-300 dark:border-gray-700 w-full"></div>
+          <div className="relative bg-background dark:bg-black px-4 text-sm text-muted-foreground dark:text-gray-400">
+            또는
+          </div>
+        </motion.div>
+
+        {/* 회원가입 폼 */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
+          <Formik
+            initialValues={{ name: "", email: "", password: "", confirmPassword: "" }}
+            validationSchema={SignUpSchema}
+            onSubmit={handleSignUp}
+          >
+            {({ isSubmitting }) => (
+              <Form className="space-y-4">
+                <div className="space-y-2">
+                  <Field name="name">
+                    {({ field }: { field: FieldInputProps<string> }) => (
+                      <Input
+                        {...field}
+                        type="text"
+                        placeholder={t("namePlaceholder")}
+                        className={cn(
+                          "h-12 bg-transparent",
+                          "border-gray-300 dark:border-gray-700",
+                          "text-foreground dark:text-white",
+                          "placeholder:text-muted-foreground dark:placeholder:text-gray-500",
+                          "focus:ring-2 focus:ring-primary/50"
+                        )}
+                      />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="name"
+                    component="div"
+                    className="text-sm text-red-500 dark:text-red-400"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Field name="email">
+                    {({ field }: { field: FieldInputProps<string> }) => (
+                      <Input
+                        {...field}
+                        type="email"
+                        placeholder={t("email")}
+                        className={cn(
+                          "h-12 bg-transparent",
+                          "border-gray-300 dark:border-gray-700",
+                          "text-foreground dark:text-white",
+                          "placeholder:text-muted-foreground dark:placeholder:text-gray-500",
+                          "focus:ring-2 focus:ring-primary/50"
+                        )}
+                      />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="email"
+                    component="div"
+                    className="text-sm text-red-500 dark:text-red-400"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Field name="password">
+                    {({ field }: { field: FieldInputProps<string> }) => (
+                      <Input
+                        {...field}
+                        type="password"
+                        placeholder={t("password")}
+                        className={cn(
+                          "h-12 bg-transparent",
+                          "border-gray-300 dark:border-gray-700",
+                          "text-foreground dark:text-white",
+                          "placeholder:text-muted-foreground dark:placeholder:text-gray-500",
+                          "focus:ring-2 focus:ring-primary/50"
+                        )}
+                      />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="password"
+                    component="div"
+                    className="text-sm text-red-500 dark:text-red-400"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Field name="confirmPassword">
+                    {({ field }: { field: FieldInputProps<string> }) => (
+                      <Input
+                        {...field}
+                        type="password"
+                        placeholder={t("confirmPassword")}
+                        className={cn(
+                          "h-12 bg-transparent",
+                          "border-gray-300 dark:border-gray-700",
+                          "text-foreground dark:text-white",
+                          "placeholder:text-muted-foreground dark:placeholder:text-gray-500",
+                          "focus:ring-2 focus:ring-primary/50"
+                        )}
+                      />
+                    )}
+                  </Field>
+                  <ErrorMessage
+                    name="confirmPassword"
+                    component="div"
+                    className="text-sm text-red-500 dark:text-red-400"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || isLoading}
+                  className={cn(
+                    "w-full h-12 bg-primary hover:bg-primary/90 dark:bg-gray-800 dark:hover:bg-gray-700",
+                    "text-primary-foreground dark:text-white font-medium cursor-pointer",
+                    "transition-all duration-200 shadow-sm hover:shadow-md",
+                    "sm:text-base text-sm"
+                  )}
+                >
+                  {isSubmitting || isLoading ? (
+                    <span className="flex items-center justify-center">
+                      <span className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
+                      가입 중...
+                    </span>
+                  ) : (
+                    t("signupButton")
+                  )}
+                </Button>
+              </Form>
+            )}
+          </Formik>
+        </motion.div>
+
+        {/* 로그인 링크 */}
+        <motion.div
+          className="mt-6 text-center text-sm text-muted-foreground dark:text-gray-400"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+        >
           <span>{t("alreadyHaveAccount")}</span>{" "}
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <Link
+            href="/login"
+            className={cn(
+              "text-primary hover:text-primary/90 dark:text-primary dark:hover:text-primary/90",
+              "transition-colors duration-200"
+            )}
+          >
             {t("loginLink")}
           </Link>
-        </div>
-      </CardContent>
-    </Card>
+        </motion.div>
+      </div>
+    </motion.div>
   );
 };
 
