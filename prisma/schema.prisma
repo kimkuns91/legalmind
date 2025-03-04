@@ -6,3 +6,111 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+// 사용자 모델
+model User {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // 관계
+  accounts       Account[]
+  sessions       Session[]
+  conversations  Conversation[]
+  messages       Message[]
+  documents      Document[]
+}
+
+// OAuth 계정 모델
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String  @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.String
+  access_token      String? @db.String
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.String
+  session_state     String?
+
+  // 관계
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // 복합 인덱스
+  @@unique([provider, providerAccountId])
+}
+
+// 세션 모델
+model Session {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String   @db.ObjectId
+  expires      DateTime
+
+  // 관계
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// 인증 토큰 모델
+model VerificationToken {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// 대화 모델
+model Conversation {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String   @db.ObjectId
+
+  // 관계
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+}
+
+// 메시지 모델
+model Message {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  content        String
+  role           String   // user, assistant
+  createdAt      DateTime @default(now())
+  conversationId String   @db.ObjectId
+  userId         String   @db.ObjectId
+
+  // 관계
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// 문서 모델
+model Document {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  content     String?  // JSON 형태로 저장된 문서 내용
+  fileUrl     String?  // S3에 저장된 파일 URL
+  fileType    String?  // pdf, docx 등
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String   @db.ObjectId
+  
+  // 문서 유형 (계약서, 소장, 청구서 등)
+  documentType String
+
+  // 관계
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
