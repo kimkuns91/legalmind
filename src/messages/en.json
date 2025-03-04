@@ -50,5 +50,16 @@
             "googleLoginFailed": "Google sign up failed",
             "kakaoLoginFailed": "Kakao sign up failed"
         }
+    },
+    "ForgotPasswordForm": {
+        "email": "Email",
+        "resetButton": "Send Reset Link",
+        "backToLogin": "Back to Login",
+        "validation": {
+            "emailRequired": "Email is required",
+            "emailInvalid": "Please enter a valid email address",
+            "resetEmailSent": "Password reset link has been sent to your email",
+            "resetFailed": "Failed to send password reset link"
+        }
     }
 }
