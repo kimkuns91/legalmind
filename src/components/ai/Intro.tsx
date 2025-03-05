@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 
 import { FaArrowRight } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
+import { createConversationAndRedirect } from '@/actions/conversation';
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 
@@ -14,6 +15,9 @@ interface IntroProps {
 const Intro = ({ userId }: IntroProps) => {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // 클라이언트 사이드에서만 테마 관련 기능 사용
   useEffect(() => {
@@ -26,6 +30,32 @@ const Intro = ({ userId }: IntroProps) => {
       console.log('User ID for future use:', userId);
     }
   }, [userId]);
+
+  // 폼 제출 핸들러
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!message.trim()) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setError(null);
+
+      // 서버 액션 호출하여 대화 생성 및 리다이렉트
+      await createConversationAndRedirect(message);
+
+      // 서버 액션에서 리다이렉트가 발생하므로 아래 코드는 실행되지 않음
+      // 하지만 만약 리다이렉트가 실패할 경우를 대비해 상태 초기화
+      setMessage('');
+      setIsSubmitting(false);
+    } catch (err) {
+      setIsSubmitting(false);
+      setError(err instanceof Error ? err.message : '대화를 생성하는 중 오류가 발생했습니다.');
+      console.error('대화 생성 중 오류:', err);
+    }
+  };
 
   // 애니메이션 변수 정의
   const containerVariants = {
@@ -95,7 +125,7 @@ const Intro = ({ userId }: IntroProps) => {
           <span className="text-[#F58733]">해주세요</span>가 있으니깐 걱정없어요
         </motion.h2>
 
-        <motion.form variants={itemVariants} className="mb-4 w-full">
+        <motion.form variants={itemVariants} className="mb-4 w-full" onSubmit={handleSubmit}>
           <motion.div
             initial={theme === 'dark' ? darkShadow.initial : lightShadow.initial}
             whileHover={theme === 'dark' ? darkShadow.hover : lightShadow.hover}
@@ -114,17 +144,22 @@ const Intro = ({ userId }: IntroProps) => {
                 lineHeight: '1.5em',
               }}
               placeholder="해주세요 법률 전문가에게 법률 상담을 해보세요."
+              value={message}
+              onChange={e => setMessage(e.target.value)}
+              disabled={isSubmitting}
             />
             <div className="flex items-end justify-end">
               <motion.button
-                type="button"
+                type="submit"
                 variants={buttonVariants}
                 initial="rest"
                 whileHover="hover"
                 whileTap="tap"
+                disabled={isSubmitting || !message.trim()}
                 className={cn(
                   'ml-4 cursor-pointer p-2 transition-all duration-200',
-                  'rounded-full bg-[#F58733] text-sm text-white'
+                  'rounded-full bg-[#F58733] text-sm text-white',
+                  (isSubmitting || !message.trim()) && 'cursor-not-allowed opacity-50'
                 )}
               >
                 <FaArrowRight />
@@ -132,6 +167,16 @@ const Intro = ({ userId }: IntroProps) => {
             </div>
           </motion.div>
         </motion.form>
+
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-500 dark:bg-red-900/20 dark:text-red-300"
+          >
+            {error}
+          </motion.div>
+        )}
 
         <motion.span
           variants={itemVariants}
