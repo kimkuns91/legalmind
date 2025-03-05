@@ -6,7 +6,7 @@ import HowToUseSection from '@/components/home/HowToUseSection';
 
 export default function Home() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <HeroSection />
       <FeaturesSection />
       <HowToUseSection />

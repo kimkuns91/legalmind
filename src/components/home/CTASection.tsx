@@ -43,7 +43,7 @@ export default function CTASection() {
           >
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button asChild size="lg" className="bg-[#F58733] text-white hover:bg-[#E07722]">
-                <Link href="/chat">무료로 시작하기</Link>
+                <Link href="/ai">무료로 시작하기</Link>
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

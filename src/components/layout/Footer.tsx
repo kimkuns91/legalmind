@@ -109,7 +109,7 @@ export default function Footer() {
 
         <div className="mt-12 border-t border-gray-200 pt-8">
           <p className="text-center text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} LegalMind. All rights reserved.
+            &copy; {new Date().getFullYear()} WhiteMouseDev. All rights reserved.
           </p>
         </div>
       </div>

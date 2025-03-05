@@ -3,7 +3,7 @@
 import { LuMenu, LuSearch, LuX } from 'react-icons/lu';
 import { useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
+import HeaderAuthSection from './HeaderAuthSection';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import Logo from '@/components/common/Logo';
@@ -34,8 +34,8 @@ export default function Header() {
   return (
     <header
       className={cn(
-        'fixed top-0 right-0 left-0 z-50 bg-white transition-all duration-300',
-        isScrolled ? 'border-gray-100 shadow-sm' : ''
+        'fixed top-0 right-0 left-0 z-[60] bg-white transition-all duration-300',
+        isScrolled ? 'border-b border-gray-100 shadow-sm' : ''
       )}
     >
       <div className="container mx-auto">
@@ -71,19 +71,7 @@ export default function Header() {
                 className="w-[180px] rounded-full border-gray-200 bg-gray-50 pl-8 focus-visible:ring-[#F58733] lg:w-[300px]"
               />
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-gray-200 text-sm font-medium hover:bg-gray-50 hover:text-[#F58733]"
-            >
-              로그인
-            </Button>
-            <Button
-              size="sm"
-              className="bg-[#F58733] text-sm font-medium text-white hover:bg-[#E07722]"
-            >
-              회원가입
-            </Button>
+            <HeaderAuthSection />
           </div>
 
           {/* 모바일 메뉴 버튼 */}
@@ -130,20 +118,8 @@ export default function Header() {
                   className="w-full rounded-full border-gray-200 bg-gray-50 pl-8 focus-visible:ring-[#F58733]"
                 />
               </div>
-              <div className="mt-4 flex space-x-3 px-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 border-gray-200 text-sm font-medium hover:bg-gray-50 hover:text-[#F58733]"
-                >
-                  로그인
-                </Button>
-                <Button
-                  size="sm"
-                  className="flex-1 bg-[#F58733] text-sm font-medium text-white hover:bg-[#E07722]"
-                >
-                  회원가입
-                </Button>
+              <div className="mt-4 flex justify-center px-3">
+                <HeaderAuthSection className="w-full" />
               </div>
             </div>
           </div>

@@ -18,7 +18,7 @@ interface IProvidersProps {
 
 export function Providers({ children, messages, locale, timeZone }: IProvidersProps) {
   const pathname = usePathname();
-  const isAiRoute = pathname?.startsWith('/ai');
+  const isAiRoute = pathname?.startsWith('/ai') || pathname?.startsWith('/login');
 
   const queryClient = new QueryClient({
     defaultOptions: {

@@ -11,7 +11,7 @@ export default function SignUpPage() {
         <Link href="/" className="mb-8 transition-transform duration-300 hover:scale-105">
           <Image
             src="/images/logo.png"
-            alt="LegalMind Logo"
+            alt="Logo"
             width={240}
             height={80}
             className="cursor-pointer rounded-xl"

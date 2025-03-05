@@ -28,7 +28,7 @@ export default function SideBar({ isSidebarVisible }: ISideBarProps) {
         {/* 로고 */}
         <div className="mb-6 w-2/3 pl-4">
           <Logo
-            href="/ai"
+            href="/"
             fullWidth
             width={140}
             height={60}

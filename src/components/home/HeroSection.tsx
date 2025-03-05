@@ -104,10 +104,10 @@ export default function HeroSection() {
             <div className="relative rounded-2xl bg-white p-2 shadow-xl">
               <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
                 <Image
-                  src="/images/full-logo.png"
+                  src="/images/sample.webp"
                   alt="법률 상담 이미지"
                   fill
-                  className="object-contain"
+                  className="rounded-xl border-3 border-[#F58733] object-contain"
                   priority
                 />
               </div>

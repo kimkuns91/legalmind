@@ -10,21 +10,21 @@ const testimonials = [
     name: '김민수',
     role: '개인 사용자',
     content:
-      '임대차 계약 관련 문제로 고민이 많았는데, LegalMind의 상담으로 명확한 해결책을 찾을 수 있었습니다. 전문 변호사와 상담한 것처럼 정확하고 이해하기 쉬운 답변이 인상적이었습니다.',
+      '임대차 계약 관련 문제로 고민이 많았는데, 해주세요의 상담으로 명확한 해결책을 찾을 수 있었습니다. 전문 변호사와 상담한 것처럼 정확하고 이해하기 쉬운 답변이 인상적이었습니다.',
     avatar: '/images/avatars/avatar-1.png',
   },
   {
     name: '이지영',
     role: '소상공인',
     content:
-      '사업장 계약 문제로 급하게 법률 자문이 필요했는데, 24시간 이용 가능한 LegalMind 덕분에 빠르게 대응할 수 있었습니다. 비용 부담 없이 전문적인 법률 정보를 얻을 수 있어 매우 만족스럽습니다.',
+      '사업장 계약 문제로 급하게 법률 자문이 필요했는데, 24시간 이용 가능한 해주세요 덕분에 빠르게 대응할 수 있었습니다. 비용 부담 없이 전문적인 법률 정보를 얻을 수 있어 매우 만족스럽습니다.',
     avatar: '/images/avatars/avatar-2.png',
   },
   {
     name: '박준호',
     role: 'IT 기업 법무팀',
     content:
-      '법무팀 업무에 LegalMind를 보조 도구로 활용하고 있습니다. 기초적인 법률 검토를 AI가 처리해주니 업무 효율이 크게 향상되었습니다. 특히 계약서 검토 시 놓칠 수 있는 부분을 짚어주어 큰 도움이 됩니다.',
+      '법무팀 업무에 해주세요를 보조 도구로 활용하고 있습니다. 기초적인 법률 검토를 AI가 처리해주니 업무 효율이 크게 향상되었습니다. 특히 계약서 검토 시 놓칠 수 있는 부분을 짚어주어 큰 도움이 됩니다.',
     avatar: '/images/avatars/avatar-3.png',
   },
 ];
@@ -57,7 +57,8 @@ export default function TestimonialsSection() {
         >
           <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">사용자 후기</h2>
           <p className="text-xl text-gray-600">
-            LegalMind를 통해 법률 문제를 해결한 사용자들의 생생한 후기를 확인하세요.
+            <span className="font-medium">해주세요</span> 통해 법률 문제를 해결한 사용자들의 생생한
+            후기를 확인하세요.
           </p>
         </motion.div>
 

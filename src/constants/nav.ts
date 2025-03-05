@@ -5,10 +5,10 @@ export const navItems = [
   },
   {
     label: '요금 안내',
-    href: '/',
+    href: '/pricing',
   },
   {
     label: '고객지원',
-    href: '/',
+    href: '/support',
   },
 ];
