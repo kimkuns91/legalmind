@@ -1,45 +1,38 @@
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import Link from "next/link";
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export default function HeroSection() {
   return (
     <section className="relative overflow-hidden bg-white py-20 md:py-32">
       {/* 배경 그라데이션 효과 */}
-      <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-white z-0" />
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-orange-50 to-white" />
 
       {/* 장식용 원형 요소 */}
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-orange-100 rounded-full blur-3xl opacity-70 z-0" />
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-orange-100 rounded-full blur-3xl opacity-70 z-0" />
+      <div className="absolute -top-24 -right-24 z-0 h-96 w-96 rounded-full bg-orange-100 opacity-70 blur-3xl" />
+      <div className="absolute -bottom-24 -left-24 z-0 h-96 w-96 rounded-full bg-orange-100 opacity-70 blur-3xl" />
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="relative z-10 container mx-auto px-4">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
           {/* 텍스트 섹션 */}
           <div className="max-w-2xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              AI 기술로 더 쉽고 빠른{" "}
-              <br />
-              <span className="text-[#F58733]">
-                법률 상담
-              </span>
+            <h1 className="mb-6 text-4xl leading-tight font-bold text-gray-900 md:text-5xl lg:text-6xl">
+              AI 기술로 더 쉽고 빠른 <br />
+              <span className="text-[#F58733]">법률 상담</span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              복잡한 법률 문제, 이제 <span className="font-bold text-[#F58733]">해주세요</span>와 함께 해결하세요. 24시간
-              언제든지 전문적인 법률 상담을 받을 수 있습니다.
+            <p className="mb-8 text-xl text-gray-600">
+              복잡한 법률 문제, 이제 <span className="font-bold text-[#F58733]">해주세요</span>와
+              함께 해결하세요. 24시간 언제든지 전문적인 법률 상담을 받을 수 있습니다.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                asChild
-                size="lg"
-                className="bg-[#F58733] hover:bg-[#E07722] text-white"
-              >
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <Button asChild size="lg" className="bg-[#F58733] text-white hover:bg-[#E07722]">
                 <Link href="/ai">무료로 시작하기</Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
                 size="lg"
-                className="text-[#F58733] border-[#F58733] hover:bg-orange-50"
+                className="border-[#F58733] text-[#F58733] hover:bg-orange-50"
               >
                 <Link href="/pricing">요금제 알아보기</Link>
               </Button>
@@ -47,12 +40,10 @@ export default function HeroSection() {
 
             {/* 신뢰 지표 */}
             <div className="mt-12">
-              <p className="text-sm text-gray-500 mb-4">
-                신뢰할 수 있는 서비스
-              </p>
-              <div className="flex flex-wrap gap-8 items-center">
+              <p className="mb-4 text-sm text-gray-500">신뢰할 수 있는 서비스</p>
+              <div className="flex flex-wrap items-center gap-8">
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5 text-[#F58733]"
@@ -66,12 +57,10 @@ export default function HeroSection() {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-700">
-                    10,000+ 상담 완료
-                  </span>
+                  <span className="text-gray-700">10,000+ 상담 완료</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5 text-[#F58733]"
@@ -81,12 +70,10 @@ export default function HeroSection() {
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
                   </div>
-                  <span className="text-gray-700">
-                    4.9/5 평점
-                  </span>
+                  <span className="text-gray-700">4.9/5 평점</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-5 w-5 text-[#F58733]"
@@ -105,9 +92,7 @@ export default function HeroSection() {
                       />
                     </svg>
                   </div>
-                  <span className="text-gray-700">
-                    24/7 상담 가능
-                  </span>
+                  <span className="text-gray-700">24/7 상담 가능</span>
                 </div>
               </div>
             </div>
@@ -115,9 +100,9 @@ export default function HeroSection() {
 
           {/* 이미지 섹션 */}
           <div className="relative hidden lg:block">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#F58733]/20 to-orange-300/20 rounded-2xl transform rotate-3 scale-105" />
-            <div className="relative bg-white p-2 rounded-2xl shadow-xl">
-              <div className="aspect-[4/3] relative rounded-xl overflow-hidden">
+            <div className="absolute inset-0 scale-105 rotate-3 transform rounded-2xl bg-gradient-to-br from-[#F58733]/20 to-orange-300/20" />
+            <div className="relative rounded-2xl bg-white p-2 shadow-xl">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
                 <Image
                   src="/images/full-logo.png"
                   alt="법률 상담 이미지"
@@ -129,9 +114,9 @@ export default function HeroSection() {
             </div>
 
             {/* 플로팅 카드 */}
-            <div className="absolute -bottom-6 -left-12 bg-white p-4 rounded-lg shadow-lg">
+            <div className="absolute -bottom-6 -left-12 rounded-lg bg-white p-4 shadow-lg">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6 text-[#F58733]"
@@ -148,20 +133,16 @@ export default function HeroSection() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    안전한 데이터 보호
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    개인정보 암호화 처리
-                  </p>
+                  <p className="text-sm font-medium text-gray-900">안전한 데이터 보호</p>
+                  <p className="text-xs text-gray-500">개인정보 암호화 처리</p>
                 </div>
               </div>
             </div>
 
             {/* 플로팅 카드 2 */}
-            <div className="absolute -top-6 -right-12 bg-white p-4 rounded-lg shadow-lg">
+            <div className="absolute -top-6 -right-12 rounded-lg bg-white p-4 shadow-lg">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6 text-[#F58733]"
@@ -178,12 +159,8 @@ export default function HeroSection() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    전문가 검증
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    변호사 감수 시스템
-                  </p>
+                  <p className="text-sm font-medium text-gray-900">전문가 검증</p>
+                  <p className="text-xs text-gray-500">변호사 감수 시스템</p>
                 </div>
               </div>
             </div>

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
+import Image from 'next/image';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 interface ILogoProps {
   href?: string;
@@ -14,7 +14,7 @@ interface ILogoProps {
 }
 
 export default function Logo({
-  href = "/",
+  href = '/',
   className,
   width = 40,
   height = 40,
@@ -22,15 +22,9 @@ export default function Logo({
   light = false,
 }: ILogoProps) {
   const logoContent = (
-    <div
-      className={cn(
-        "flex items-center",
-        fullWidth && "w-full justify-center",
-        className
-      )}
-    >
+    <div className={cn('flex items-center', fullWidth && 'w-full justify-center', className)}>
       <Image
-        src={light ? "/images/full-logo-light.png" : "/images/full-logo.png"}
+        src={light ? '/images/full-logo-light.png' : '/images/full-logo.png'}
         alt="LegalMind 로고"
         width={width}
         height={height}
@@ -42,7 +36,7 @@ export default function Logo({
 
   if (href) {
     return (
-      <Link href={href} className={fullWidth ? "w-full block" : ""}>
+      <Link href={href} className={fullWidth ? 'block w-full' : ''}>
         {logoContent}
       </Link>
     );

@@ -1,32 +1,21 @@
-"use client";
+'use client';
 
-import * as Yup from "yup";
+import * as Yup from 'yup';
 
-import {
-  ErrorMessage,
-  Field,
-  FieldInputProps,
-  Form,
-  Formik,
-  FormikHelpers,
-} from "formik";
-import {
-  loginWithGoogle,
-  loginWithKakao,
-  registerUser,
-} from "@/actions/auth";
+import { ErrorMessage, Field, FieldInputProps, Form, Formik, FormikHelpers } from 'formik';
+import { loginWithGoogle, loginWithKakao, registerUser } from '@/actions/auth';
 
-import { Button } from "@/components/ui/button";
-import { FcGoogle } from "react-icons/fc";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { RiKakaoTalkFill } from "react-icons/ri";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { Button } from '@/components/ui/button';
+import { FcGoogle } from 'react-icons/fc';
+import { Input } from '@/components/ui/input';
+import Link from 'next/link';
+import { RiKakaoTalkFill } from 'react-icons/ri';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
+import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface ISignUpValues {
   name: string;
@@ -37,21 +26,19 @@ interface ISignUpValues {
 
 const SignUpForm = () => {
   const router = useRouter();
-  const t = useTranslations("SignUpForm");
+  const t = useTranslations('SignUpForm');
   const [isLoading, setIsLoading] = useState(false);
 
   // 회원가입 폼 유효성 검증 스키마
   const SignUpSchema = Yup.object().shape({
-    name: Yup.string().required(t("validation.nameRequired")),
-    email: Yup.string()
-      .email(t("validation.emailInvalid"))
-      .required(t("validation.emailRequired")),
+    name: Yup.string().required(t('validation.nameRequired')),
+    email: Yup.string().email(t('validation.emailInvalid')).required(t('validation.emailRequired')),
     password: Yup.string()
-      .min(6, t("validation.passwordMinLength"))
-      .required(t("validation.passwordRequired")),
+      .min(6, t('validation.passwordMinLength'))
+      .required(t('validation.passwordRequired')),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password")], t("validation.passwordMatch"))
-      .required(t("validation.confirmPasswordRequired")),
+      .oneOf([Yup.ref('password')], t('validation.passwordMatch'))
+      .required(t('validation.confirmPasswordRequired')),
   });
 
   const handleSignUp = async (
@@ -60,22 +47,18 @@ const SignUpForm = () => {
   ) => {
     try {
       setIsLoading(true);
-      
+
       // Server Action을 사용하여 회원가입 처리
-      const result = await registerUser(
-        values.name,
-        values.email,
-        values.password
-      );
+      const result = await registerUser(values.name, values.email, values.password);
 
       if (result.success) {
-        toast.success(t("validation.signupSuccess"));
-        
+        toast.success(t('validation.signupSuccess'));
+
         // 회원가입 성공 후 로그인 페이지로 이동
-        router.push("/login");
+        router.push('/login');
         router.refresh();
       } else {
-        toast.error(result.error || "회원가입에 실패했습니다.");
+        toast.error(result.error || '회원가입에 실패했습니다.');
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -90,15 +73,15 @@ const SignUpForm = () => {
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-      
+
       // 구글 로그인 시도 - 성공 시 리다이렉션 발생
       await loginWithGoogle();
-      
+
       // 리다이렉션이 발생하므로 아래 코드는 실행되지 않음
     } catch (error) {
       // 리다이렉션 에러가 아닌 경우에만 오류 메시지 표시
-      if (!((error as { digest?: string })?.digest?.includes("NEXT_REDIRECT"))) {
-        toast.error(t("validation.googleLoginFailed"));
+      if (!(error as { digest?: string })?.digest?.includes('NEXT_REDIRECT')) {
+        toast.error(t('validation.googleLoginFailed'));
       }
     } finally {
       setIsLoading(false);
@@ -108,15 +91,15 @@ const SignUpForm = () => {
   const handleKakaoSignIn = async () => {
     try {
       setIsLoading(true);
-      
+
       // 카카오 로그인 시도 - 성공 시 리다이렉션 발생
       await loginWithKakao();
-      
+
       // 리다이렉션이 발생하므로 아래 코드는 실행되지 않음
     } catch (error) {
       // 리다이렉션 에러가 아닌 경우에만 오류 메시지 표시
-      if (!((error as { digest?: string })?.digest?.includes("NEXT_REDIRECT"))) {
-        toast.error(t("validation.kakaoLoginFailed"));
+      if (!(error as { digest?: string })?.digest?.includes('NEXT_REDIRECT')) {
+        toast.error(t('validation.kakaoLoginFailed'));
       }
     } finally {
       setIsLoading(false);
@@ -132,7 +115,7 @@ const SignUpForm = () => {
       <div className="w-full">
         {/* 소셜 로그인 버튼 */}
         <motion.div
-          className="flex flex-col space-y-3 mb-4"
+          className="mb-4 flex flex-col space-y-3"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
@@ -142,15 +125,15 @@ const SignUpForm = () => {
             onClick={handleKakaoSignIn}
             disabled={isLoading}
             className={cn(
-              "w-full h-12 bg-[#FEE500] hover:bg-[#FDD835] text-black font-medium",
-              "flex items-center justify-center cursor-pointer",
-              "transition-all duration-200 shadow-sm hover:shadow-md",
-              "sm:text-base text-sm"
+              'h-12 w-full bg-[#FEE500] font-medium text-black hover:bg-[#FDD835]',
+              'flex cursor-pointer items-center justify-center',
+              'shadow-sm transition-all duration-200 hover:shadow-md',
+              'text-sm sm:text-base'
             )}
           >
             {isLoading ? (
               <span className="flex items-center justify-center">
-                <span className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
+                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
                 로그인 중...
               </span>
             ) : (
@@ -167,16 +150,16 @@ const SignUpForm = () => {
             onClick={handleGoogleSignIn}
             disabled={isLoading}
             className={cn(
-              "w-full h-12 bg-background dark:bg-white text-foreground dark:text-black",
-              "border border-gray-300 dark:border-gray-300 hover:bg-accent",
-              "font-medium flex items-center justify-center cursor-pointer",
-              "transition-all duration-200 shadow-sm hover:shadow-md",
-              "sm:text-base text-sm"
+              'bg-background text-foreground h-12 w-full dark:bg-white dark:text-black',
+              'hover:bg-accent border border-gray-300 dark:border-gray-300',
+              'flex cursor-pointer items-center justify-center font-medium',
+              'shadow-sm transition-all duration-200 hover:shadow-md',
+              'text-sm sm:text-base'
             )}
           >
             {isLoading ? (
               <span className="flex items-center justify-center">
-                <span className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
+                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
                 로그인 중...
               </span>
             ) : (
@@ -190,13 +173,13 @@ const SignUpForm = () => {
 
         {/* 또는 구분선 */}
         <motion.div
-          className="relative flex items-center justify-center my-6"
+          className="relative my-6 flex items-center justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <div className="absolute border-t border-gray-300 dark:border-gray-700 w-full"></div>
-          <div className="relative bg-background dark:bg-black px-4 text-sm text-muted-foreground dark:text-gray-400">
+          <div className="absolute w-full border-t border-gray-300 dark:border-gray-700"></div>
+          <div className="bg-background text-muted-foreground relative px-4 text-sm dark:bg-black dark:text-gray-400">
             또는
           </div>
         </motion.div>
@@ -208,7 +191,7 @@ const SignUpForm = () => {
           transition={{ delay: 0.4, duration: 0.5 }}
         >
           <Formik
-            initialValues={{ name: "", email: "", password: "", confirmPassword: "" }}
+            initialValues={{ name: '', email: '', password: '', confirmPassword: '' }}
             validationSchema={SignUpSchema}
             onSubmit={handleSignUp}
           >
@@ -220,13 +203,13 @@ const SignUpForm = () => {
                       <Input
                         {...field}
                         type="text"
-                        placeholder={t("namePlaceholder")}
+                        placeholder={t('namePlaceholder')}
                         className={cn(
-                          "h-12 bg-transparent",
-                          "border-gray-300 dark:border-gray-700",
-                          "text-foreground dark:text-white",
-                          "placeholder:text-muted-foreground dark:placeholder:text-gray-500",
-                          "focus:ring-2 focus:ring-primary/50"
+                          'h-12 bg-transparent',
+                          'border-gray-300 dark:border-gray-700',
+                          'text-foreground dark:text-white',
+                          'placeholder:text-muted-foreground dark:placeholder:text-gray-500',
+                          'focus:ring-primary/50 focus:ring-2'
                         )}
                       />
                     )}
@@ -244,13 +227,13 @@ const SignUpForm = () => {
                       <Input
                         {...field}
                         type="email"
-                        placeholder={t("email")}
+                        placeholder={t('email')}
                         className={cn(
-                          "h-12 bg-transparent",
-                          "border-gray-300 dark:border-gray-700",
-                          "text-foreground dark:text-white",
-                          "placeholder:text-muted-foreground dark:placeholder:text-gray-500",
-                          "focus:ring-2 focus:ring-primary/50"
+                          'h-12 bg-transparent',
+                          'border-gray-300 dark:border-gray-700',
+                          'text-foreground dark:text-white',
+                          'placeholder:text-muted-foreground dark:placeholder:text-gray-500',
+                          'focus:ring-primary/50 focus:ring-2'
                         )}
                       />
                     )}
@@ -268,13 +251,13 @@ const SignUpForm = () => {
                       <Input
                         {...field}
                         type="password"
-                        placeholder={t("password")}
+                        placeholder={t('password')}
                         className={cn(
-                          "h-12 bg-transparent",
-                          "border-gray-300 dark:border-gray-700",
-                          "text-foreground dark:text-white",
-                          "placeholder:text-muted-foreground dark:placeholder:text-gray-500",
-                          "focus:ring-2 focus:ring-primary/50"
+                          'h-12 bg-transparent',
+                          'border-gray-300 dark:border-gray-700',
+                          'text-foreground dark:text-white',
+                          'placeholder:text-muted-foreground dark:placeholder:text-gray-500',
+                          'focus:ring-primary/50 focus:ring-2'
                         )}
                       />
                     )}
@@ -292,13 +275,13 @@ const SignUpForm = () => {
                       <Input
                         {...field}
                         type="password"
-                        placeholder={t("confirmPassword")}
+                        placeholder={t('confirmPassword')}
                         className={cn(
-                          "h-12 bg-transparent",
-                          "border-gray-300 dark:border-gray-700",
-                          "text-foreground dark:text-white",
-                          "placeholder:text-muted-foreground dark:placeholder:text-gray-500",
-                          "focus:ring-2 focus:ring-primary/50"
+                          'h-12 bg-transparent',
+                          'border-gray-300 dark:border-gray-700',
+                          'text-foreground dark:text-white',
+                          'placeholder:text-muted-foreground dark:placeholder:text-gray-500',
+                          'focus:ring-primary/50 focus:ring-2'
                         )}
                       />
                     )}
@@ -314,19 +297,19 @@ const SignUpForm = () => {
                   type="submit"
                   disabled={isSubmitting || isLoading}
                   className={cn(
-                    "w-full h-12 bg-primary hover:bg-primary/90 dark:bg-gray-800 dark:hover:bg-gray-700",
-                    "text-primary-foreground dark:text-white font-medium cursor-pointer",
-                    "transition-all duration-200 shadow-sm hover:shadow-md",
-                    "sm:text-base text-sm"
+                    'bg-primary hover:bg-primary/90 h-12 w-full dark:bg-gray-800 dark:hover:bg-gray-700',
+                    'text-primary-foreground cursor-pointer font-medium dark:text-white',
+                    'shadow-sm transition-all duration-200 hover:shadow-md',
+                    'text-sm sm:text-base'
                   )}
                 >
                   {isSubmitting || isLoading ? (
                     <span className="flex items-center justify-center">
-                      <span className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
+                      <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
                       가입 중...
                     </span>
                   ) : (
-                    t("signupButton")
+                    t('signupButton')
                   )}
                 </Button>
               </Form>
@@ -336,20 +319,20 @@ const SignUpForm = () => {
 
         {/* 로그인 링크 */}
         <motion.div
-          className="mt-6 text-center text-sm text-muted-foreground dark:text-gray-400"
+          className="text-muted-foreground mt-6 text-center text-sm dark:text-gray-400"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.5 }}
         >
-          <span>{t("alreadyHaveAccount")}</span>{" "}
+          <span>{t('alreadyHaveAccount')}</span>{' '}
           <Link
             href="/login"
             className={cn(
-              "text-primary hover:text-primary/90 dark:text-primary dark:hover:text-primary/90",
-              "transition-colors duration-200"
+              'text-primary hover:text-primary/90 dark:text-primary dark:hover:text-primary/90',
+              'transition-colors duration-200'
             )}
           >
-            {t("loginLink")}
+            {t('loginLink')}
           </Link>
         </motion.div>
       </div>

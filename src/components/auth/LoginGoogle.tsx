@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { FcGoogle } from "react-icons/fc";
-import { useTranslations } from "next-intl";
+import { Button } from '@/components/ui/button';
+import { FcGoogle } from 'react-icons/fc';
+import { useTranslations } from 'next-intl';
 
 interface LoginGoogleProps {
   handleGoogleLogin: () => Promise<void>;
@@ -10,7 +10,7 @@ interface LoginGoogleProps {
 }
 
 const LoginGoogle = ({ handleGoogleLogin, isLoading }: LoginGoogleProps) => {
-  const t = useTranslations("SignInForm");
+  const t = useTranslations('SignInForm');
 
   return (
     <Button
@@ -18,12 +18,12 @@ const LoginGoogle = ({ handleGoogleLogin, isLoading }: LoginGoogleProps) => {
       variant="outline"
       onClick={handleGoogleLogin}
       disabled={isLoading}
-      className="flex w-full items-center justify-center gap-2 rounded-lg border border-input bg-background py-3 h-12 text-foreground transition-colors hover:bg-accent hover:text-accent-foreground cursor-pointer"
+      className="border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border py-3 transition-colors"
     >
       <FcGoogle className="h-5 w-5" />
-      <span>{t("googleLogin")}</span>
+      <span>{t('googleLogin')}</span>
     </Button>
   );
 };
 
-export default LoginGoogle; 
+export default LoginGoogle;

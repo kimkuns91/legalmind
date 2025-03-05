@@ -1,26 +1,26 @@
-import Link from "next/link";
-import Logo from "@/components/common/Logo";
+import Link from 'next/link';
+import Logo from '@/components/common/Logo';
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-gray-200">
+    <footer className="border-t border-gray-200 bg-white">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* 회사 정보 */}
           <div className="col-span-1 md:col-span-1">
             <Logo width={150} height={36} className="mb-4" />
-            <p className="text-gray-600 mb-4">
+            <p className="mb-4 text-gray-600">
               AI 기술을 활용한 법률 상담 서비스로 누구나 쉽게 법률 정보에 접근할 수 있도록 돕습니다.
             </p>
             <div className="flex space-x-4">
               {/* 소셜 미디어 아이콘 */}
-              {["facebook", "twitter", "instagram", "linkedin"].map((social) => (
+              {['facebook', 'twitter', 'instagram', 'linkedin'].map(social => (
                 <a
                   key={social}
                   href={`https://${social}.com`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-[#F58733] transition-colors"
+                  className="text-gray-500 transition-colors hover:text-[#F58733]"
                 >
                   <span className="sr-only">{social}</span>
                   <svg
@@ -42,18 +42,18 @@ export default function Footer() {
 
           {/* 서비스 */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">서비스</h3>
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">서비스</h3>
             <ul className="space-y-3">
               {[
-                { name: "법률 상담", href: "/chat" },
-                { name: "요금제", href: "/pricing" },
-                { name: "자주 묻는 질문", href: "/faq" },
-                { name: "이용 가이드", href: "/guide" },
-              ].map((item) => (
+                { name: '법률 상담', href: '/chat' },
+                { name: '요금제', href: '/pricing' },
+                { name: '자주 묻는 질문', href: '/faq' },
+                { name: '이용 가이드', href: '/guide' },
+              ].map(item => (
                 <li key={item.name}>
                   <Link
                     href={item.href}
-                    className="text-gray-600 hover:text-[#F58733] transition-colors"
+                    className="text-gray-600 transition-colors hover:text-[#F58733]"
                   >
                     {item.name}
                   </Link>
@@ -64,18 +64,18 @@ export default function Footer() {
 
           {/* 회사 */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">회사</h3>
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">회사</h3>
             <ul className="space-y-3">
               {[
-                { name: "회사 소개", href: "/about" },
-                { name: "팀", href: "/team" },
-                { name: "채용", href: "/careers" },
-                { name: "블로그", href: "/blog" },
-              ].map((item) => (
+                { name: '회사 소개', href: '/about' },
+                { name: '팀', href: '/team' },
+                { name: '채용', href: '/careers' },
+                { name: '블로그', href: '/blog' },
+              ].map(item => (
                 <li key={item.name}>
                   <Link
                     href={item.href}
-                    className="text-gray-600 hover:text-[#F58733] transition-colors"
+                    className="text-gray-600 transition-colors hover:text-[#F58733]"
                   >
                     {item.name}
                   </Link>
@@ -86,18 +86,18 @@ export default function Footer() {
 
           {/* 고객지원 */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">고객지원</h3>
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">고객지원</h3>
             <ul className="space-y-3">
               {[
-                { name: "고객센터", href: "/support" },
-                { name: "문의하기", href: "/contact" },
-                { name: "개인정보처리방침", href: "/privacy" },
-                { name: "이용약관", href: "/terms" },
-              ].map((item) => (
+                { name: '고객센터', href: '/support' },
+                { name: '문의하기', href: '/contact' },
+                { name: '개인정보처리방침', href: '/privacy' },
+                { name: '이용약관', href: '/terms' },
+              ].map(item => (
                 <li key={item.name}>
                   <Link
                     href={item.href}
-                    className="text-gray-600 hover:text-[#F58733] transition-colors"
+                    className="text-gray-600 transition-colors hover:text-[#F58733]"
                   >
                     {item.name}
                   </Link>
@@ -107,8 +107,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-200 mt-12 pt-8">
-          <p className="text-gray-500 text-sm text-center">
+        <div className="mt-12 border-t border-gray-200 pt-8">
+          <p className="text-center text-sm text-gray-500">
             &copy; {new Date().getFullYear()} LegalMind. All rights reserved.
           </p>
         </div>

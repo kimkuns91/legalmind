@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface LoginKakaoProps {
   handleKakaoLogin: () => Promise<void>;
@@ -10,7 +10,7 @@ interface LoginKakaoProps {
 }
 
 const LoginKakao = ({ handleKakaoLogin, isLoading }: LoginKakaoProps) => {
-  const t = useTranslations("SignInForm");
+  const t = useTranslations('SignInForm');
 
   return (
     <Button
@@ -18,9 +18,9 @@ const LoginKakao = ({ handleKakaoLogin, isLoading }: LoginKakaoProps) => {
       variant="outline"
       onClick={handleKakaoLogin}
       disabled={isLoading}
-      className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 h-12 bg-[#FEE500] text-black hover:bg-[#FEE500]/90 transition-colors cursor-pointer"
+      className="flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-[#FEE500] py-3 text-black transition-colors hover:bg-[#FEE500]/90"
     >
-      <div className="relative w-5 h-5">
+      <div className="relative h-5 w-5">
         <Image
           src="/images/kakao-logo.png"
           alt="Kakao Logo"
@@ -29,7 +29,7 @@ const LoginKakao = ({ handleKakaoLogin, isLoading }: LoginKakaoProps) => {
           className="object-contain"
         />
       </div>
-      <span>{t("kakaoLogin")}</span>
+      <span>{t('kakaoLogin')}</span>
     </Button>
   );
 };

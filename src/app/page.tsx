@@ -1,8 +1,8 @@
-import CTASection from "@/components/home/CTASection";
-import FaqSection from "@/components/home/FaqSection";
-import FeaturesSection from "@/components/home/FeaturesSection";
-import HeroSection from "@/components/home/HeroSection";
-import HowToUseSection from "@/components/home/HowToUseSection";
+import CTASection from '@/components/home/CTASection';
+import FaqSection from '@/components/home/FaqSection';
+import FeaturesSection from '@/components/home/FeaturesSection';
+import HeroSection from '@/components/home/HeroSection';
+import HowToUseSection from '@/components/home/HowToUseSection';
 
 export default function Home() {
   return (

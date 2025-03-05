@@ -1,5 +1,5 @@
-import Lottie from "lottie-react";
-import loadingAnimation from "../../../public/assets/loading_dot.json";
+import Lottie from 'lottie-react';
+import loadingAnimation from '../../../public/assets/loading_dot.json';
 
 interface LoadingProps {
   size?: number;
@@ -7,12 +7,7 @@ interface LoadingProps {
 
 const Loading = ({ size }: LoadingProps) => {
   return (
-    <Lottie
-      animationData={loadingAnimation}
-      autoplay
-      loop
-      style={{ width: size, height: size }}
-    />
+    <Lottie animationData={loadingAnimation} autoplay loop style={{ width: size, height: size }} />
   );
 };
 

@@ -1,28 +1,23 @@
-import NextAuth from "next-auth";
-import { NextResponse } from "next/server";
-import { authConfig } from "@/lib/auth.config";
+import NextAuth from 'next-auth';
+import { NextResponse } from 'next/server';
+import { authConfig } from '@/lib/auth.config';
 
-const protectedRoutes = ["/mypage", "/dashboard"];
-const authRoutes = ["/login", "/signup"];
+const protectedRoutes = ['/mypage', '/dashboard'];
+const authRoutes = ['/login', '/signup'];
 
 const { auth } = NextAuth(authConfig);
 
-
-export default auth((req) => {
+export default auth(req => {
   const isLoggedIn = !!req.auth;
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    req.nextUrl.pathname.startsWith(route)
-  );
-  const isAuthRoute = authRoutes.some((route) =>
-    req.nextUrl.pathname.startsWith(route)
-  );
+  const isProtectedRoute = protectedRoutes.some(route => req.nextUrl.pathname.startsWith(route));
+  const isAuthRoute = authRoutes.some(route => req.nextUrl.pathname.startsWith(route));
 
   if (isProtectedRoute && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/signin", req.url));
+    return NextResponse.redirect(new URL('/signin', req.url));
   }
 
   if (isAuthRoute && isLoggedIn) {
-    return NextResponse.redirect(new URL("/", req.url));
+    return NextResponse.redirect(new URL('/', req.url));
   }
 
   return NextResponse.next();
@@ -30,5 +25,5 @@ export default auth((req) => {
 
 // This line configures which routes the middleware should run on
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };

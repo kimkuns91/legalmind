@@ -1,25 +1,25 @@
-import "@/styles/globals.css";
+import '@/styles/globals.css';
 
-import { Geist, Geist_Mono } from "next/font/google";
-import { getLocale, getMessages, getTimeZone } from "next-intl/server";
+import { Geist, Geist_Mono } from 'next/font/google';
+import { getLocale, getMessages, getTimeZone } from 'next-intl/server';
 
-import type { Metadata } from "next";
-import { Providers } from "./providers";
-import { cn } from "@/lib/utils";
+import type { Metadata } from 'next';
+import { Providers } from './providers';
+import { cn } from '@/lib/utils';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "LegalMind",
-  description: "LegalMind",
+  title: 'LegalMind',
+  description: 'LegalMind',
 };
 
 export default async function RootLayout({
@@ -35,7 +35,7 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          'bg-background min-h-screen font-sans antialiased',
           geistSans.variable,
           geistMono.variable
         )}

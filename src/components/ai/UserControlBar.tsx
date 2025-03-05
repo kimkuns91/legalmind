@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   DropdownMenu,
@@ -6,41 +6,41 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { FaCog, FaMoon, FaSun, FaUser } from "react-icons/fa";
-import { signOut, useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+} from '@/components/ui/dropdown-menu';
+import { FaCog, FaMoon, FaSun, FaUser } from 'react-icons/fa';
+import { signOut, useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
-import { IoLogOutOutline } from "react-icons/io5";
-import Link from "next/link";
-import { Switch } from "@/components/ui/switch";
-import { useTheme } from "next-themes";
+import { IoLogOutOutline } from 'react-icons/io5';
+import Link from 'next/link';
+import { Switch } from '@/components/ui/switch';
+import { useTheme } from 'next-themes';
 
 export default function UserControlBar() {
   const { data: session, status } = useSession();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  
+
   // 클라이언트 사이드에서만 테마 관련 기능 사용
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: "/" });
+    await signOut({ callbackUrl: '/' });
   };
 
   // 로그인 상태가 아닌 경우 로그인 버튼 표시
-  if (status === "unauthenticated") {
+  if (status === 'unauthenticated') {
     return (
-      <div className="mt-auto p-4 border-t border-border">
+      <div className="border-border mt-auto border-t p-4">
         <Link
           href="/login"
-          className="flex items-center justify-center gap-2 w-full p-3 bg-green-500 text-black rounded-lg hover:bg-green-400 transition-colors"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-500 p-3 text-black transition-colors hover:bg-green-400"
         >
           <FaUser className="text-sm" />
           <span className="font-medium">로그인</span>
@@ -50,15 +50,15 @@ export default function UserControlBar() {
   }
 
   // 로딩 중인 경우 스켈레톤 UI 표시
-  if (status === "loading" || !mounted) {
+  if (status === 'loading' || !mounted) {
     return (
-      <div className="mt-auto p-4 border-t border-border">
+      <div className="border-border mt-auto border-t p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-muted animate-pulse"></div>
+            <div className="bg-muted h-8 w-8 animate-pulse rounded-full"></div>
             <div className="space-y-2">
-              <div className="h-4 w-20 bg-muted rounded animate-pulse"></div>
-              <div className="h-3 w-16 bg-muted rounded animate-pulse"></div>
+              <div className="bg-muted h-4 w-20 animate-pulse rounded"></div>
+              <div className="bg-muted h-3 w-16 animate-pulse rounded"></div>
             </div>
           </div>
         </div>
@@ -68,16 +68,16 @@ export default function UserControlBar() {
 
   // 로그인 상태인 경우 사용자 정보와 컨트롤 메뉴 표시
   return (
-    <div className="mt-auto p-4 border-t border-border">
+    <div className="border-border mt-auto border-t p-4">
       <div className="flex items-center justify-between">
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 outline-none cursor-pointer">
-            <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-black">
-              {session?.user?.name?.[0] || "U"}
+          <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 outline-none">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-black">
+              {session?.user?.name?.[0] || 'U'}
             </div>
             <div className="text-sm">
-              <p className="font-medium text-foreground">{session?.user?.name || "사용자"}</p>
-              <p className="text-xs text-muted-foreground truncate max-w-[120px]">
+              <p className="text-foreground font-medium">{session?.user?.name || '사용자'}</p>
+              <p className="text-muted-foreground max-w-[120px] truncate text-xs">
                 {session?.user?.email}
               </p>
             </div>
@@ -95,7 +95,7 @@ export default function UserControlBar() {
             <div className="p-2">
               <div className="flex items-center justify-between" onClick={toggleTheme}>
                 <div className="flex items-center gap-2">
-                  {theme === "dark" ? (
+                  {theme === 'dark' ? (
                     <FaMoon className="text-sm" />
                   ) : (
                     <FaSun className="text-sm text-orange-500" />
@@ -103,14 +103,14 @@ export default function UserControlBar() {
                   <span className="text-sm">다크 모드</span>
                 </div>
                 <Switch
-                  checked={theme === "dark"}
+                  checked={theme === 'dark'}
                   onCheckedChange={toggleTheme}
-                  className="data-[state=checked]:bg-green-500 cursor-pointer"
+                  className="cursor-pointer data-[state=checked]:bg-green-500"
                 />
               </div>
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
+            <DropdownMenuItem
               className="flex items-center gap-2 text-red-500 dark:text-red-400"
               onClick={handleLogout}
             >
@@ -122,4 +122,4 @@ export default function UserControlBar() {
       </div>
     </div>
   );
-} 
+}

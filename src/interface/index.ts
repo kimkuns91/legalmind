@@ -84,4 +84,4 @@ export enum DocumentType {
   AGREEMENT = 'agreement',
   POWER_OF_ATTORNEY = 'powerOfAttorney',
   OTHER = 'other',
-} 
+}

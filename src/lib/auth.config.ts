@@ -1,18 +1,18 @@
-import type { NextAuthConfig } from "next-auth";
+import type { NextAuthConfig } from 'next-auth';
 import {
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   KAKAO_CLIENT_ID,
   KAKAO_CLIENT_SECRET,
-} from "@/config";
+} from '@/config';
 
-import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
-import type { JWT } from "@auth/core/jwt";
-import Kakao from "next-auth/providers/kakao";
-import type { Session } from "@auth/core/types";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+import Credentials from 'next-auth/providers/credentials';
+import Google from 'next-auth/providers/google';
+import type { JWT } from '@auth/core/jwt';
+import Kakao from 'next-auth/providers/kakao';
+import type { Session } from '@auth/core/types';
+import bcrypt from 'bcryptjs';
+import { prisma } from '@/lib/prisma';
 
 export const authConfig = {
   providers: [
@@ -21,9 +21,9 @@ export const authConfig = {
       clientSecret: GOOGLE_CLIENT_SECRET,
       authorization: {
         params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
         },
       },
     }),
@@ -31,36 +31,33 @@ export const authConfig = {
       clientId: KAKAO_CLIENT_ID,
       clientSecret: KAKAO_CLIENT_SECRET,
       authorization: {
-        url: "https://kauth.kakao.com/oauth/authorize",
+        url: 'https://kauth.kakao.com/oauth/authorize',
         params: {
-          scope: "profile_nickname profile_image account_email",
-        }
+          scope: 'profile_nickname profile_image account_email',
+        },
       },
       profile(profile) {
         return {
           id: profile.id.toString(),
           name:
-            profile.properties?.nickname ||
-            profile.kakao_account?.profile?.nickname ||
-            "Unknown",
+            profile.properties?.nickname || profile.kakao_account?.profile?.nickname || 'Unknown',
           email: profile.kakao_account?.email || `${profile.id}@kakao.com`,
           image:
-            profile.properties?.profile_image ||
-            profile.kakao_account?.profile?.profile_image_url,
+            profile.properties?.profile_image || profile.kakao_account?.profile?.profile_image_url,
         };
       },
     }),
     Credentials({
-      name: "credentials",
+      name: 'credentials',
       credentials: {
         email: {
-          label: "Email",
-          type: "email",
-          placeholder: "email@example.com",
+          label: 'Email',
+          type: 'email',
+          placeholder: 'email@example.com',
         },
-        password: { label: "Password", type: "password" },
+        password: { label: 'Password', type: 'password' },
       },
-      authorize: async (credentials) => {
+      authorize: async credentials => {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
@@ -92,19 +89,19 @@ export const authConfig = {
             image: user.image,
           };
         } catch (error) {
-          console.error("인증 오류:", error);
+          console.error('인증 오류:', error);
           return null;
         }
       },
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
     maxAge: 60 * 60 * 24, // 1 day
   },
   pages: {
-    signIn: "/login",
-    error: "/auth/error",
+    signIn: '/login',
+    error: '/auth/error',
   },
   callbacks: {
     async session({ session, token }: { session: Session; token: JWT }) {
