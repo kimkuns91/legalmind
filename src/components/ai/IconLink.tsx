@@ -16,16 +16,17 @@ const IconLink: React.FC<IconLinkProps> = ({ href, icon, text }) => {
       className={cn(
         "flex items-center justify-between",
         "rounded",
-        "py-2 px-4",
-        "hover:bg-gray-200",
-        "cursor-pointer"
+        "py-3 px-4",
+        "hover:bg-zinc-800",
+        "cursor-pointer",
+        "transition-colors duration-200"
       )}
     >
       <div className={cn("flex items-center")}>
-        {icon}
-        <p className="text-base font-semibold ml-4">{text}</p>
+        <span className="text-foreground">{icon}</span>
+        <p className="text-base text-foreground ml-3">{text}</p>
       </div>
-      <MdChevronRight className="text-slate-500" />
+      <MdChevronRight className="text-zinc-500" />
     </Link>
   );
 };

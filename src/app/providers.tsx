@@ -3,9 +3,11 @@
 import { AbstractIntlMessages, NextIntlClientProvider } from "next-intl";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import RootLayout from "@/components/layout/RootLayout";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "react-hot-toast";
+import { usePathname } from "next/navigation";
 
 interface IProvidersProps {
   children: React.ReactNode;
@@ -20,6 +22,9 @@ export function Providers({
   locale,
   timeZone,
 }: IProvidersProps) {
+  const pathname = usePathname();
+  const isAiRoute = pathname?.startsWith("/ai");
+
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -27,6 +32,8 @@ export function Providers({
       },
     },
   });
+
+  const content = isAiRoute ? children : <RootLayout>{children}</RootLayout>;
 
   return (
     <SessionProvider>
@@ -42,7 +49,7 @@ export function Providers({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            {content}
             <Toaster
               position="top-center"
               toastOptions={{

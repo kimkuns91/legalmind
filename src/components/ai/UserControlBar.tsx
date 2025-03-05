@@ -7,14 +7,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FaCog, FaSun, FaUser } from "react-icons/fa";
+import { FaCog, FaMoon, FaSun, FaUser } from "react-icons/fa";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 import { IoLogOutOutline } from "react-icons/io5";
 import Link from "next/link";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 
 export default function UserControlBar() {
@@ -41,7 +40,7 @@ export default function UserControlBar() {
       <div className="mt-auto p-4 border-t border-border">
         <Link
           href="/login"
-          className="flex items-center justify-center gap-2 w-full p-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+          className="flex items-center justify-center gap-2 w-full p-3 bg-green-500 text-black rounded-lg hover:bg-green-400 transition-colors"
         >
           <FaUser className="text-sm" />
           <span className="font-medium">로그인</span>
@@ -72,18 +71,18 @@ export default function UserControlBar() {
     <div className="mt-auto p-4 border-t border-border">
       <div className="flex items-center justify-between">
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 outline-none">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground">
+          <DropdownMenuTrigger className="flex items-center gap-2 outline-none cursor-pointer">
+            <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-black">
               {session?.user?.name?.[0] || "U"}
             </div>
             <div className="text-sm">
-              <p className="font-medium">{session?.user?.name || "사용자"}</p>
+              <p className="font-medium text-foreground">{session?.user?.name || "사용자"}</p>
               <p className="text-xs text-muted-foreground truncate max-w-[120px]">
                 {session?.user?.email}
               </p>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56">
+          <DropdownMenuContent align="start" className="w-56 cursor-pointer">
             <DropdownMenuItem className="flex items-center gap-2">
               <FaUser className="text-sm" />
               <span>프로필</span>
@@ -94,20 +93,25 @@ export default function UserControlBar() {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <div className="p-2">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between" onClick={toggleTheme}>
                 <div className="flex items-center gap-2">
-                  <FaSun className={cn("text-sm", theme === "dark" ? "text-muted-foreground" : "text-primary")} />
+                  {theme === "dark" ? (
+                    <FaMoon className="text-sm" />
+                  ) : (
+                    <FaSun className="text-sm text-orange-500" />
+                  )}
                   <span className="text-sm">다크 모드</span>
                 </div>
                 <Switch
                   checked={theme === "dark"}
                   onCheckedChange={toggleTheme}
+                  className="data-[state=checked]:bg-green-500 cursor-pointer"
                 />
               </div>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem 
-              className="flex items-center gap-2 text-destructive focus:text-destructive"
+              className="flex items-center gap-2 text-red-500 dark:text-red-400"
               onClick={handleLogout}
             >
               <IoLogOutOutline className="text-sm" />

@@ -10,6 +10,7 @@ interface ILogoProps {
   width?: number;
   height?: number;
   fullWidth?: boolean;
+  light?: boolean;
 }
 
 export default function Logo({
@@ -18,15 +19,18 @@ export default function Logo({
   width = 40,
   height = 40,
   fullWidth = false,
+  light = false,
 }: ILogoProps) {
   const logoContent = (
-    <div className={cn(
-      "flex items-center", 
-      fullWidth && "w-full justify-center",
-      className
-    )}>
+    <div
+      className={cn(
+        "flex items-center",
+        fullWidth && "w-full justify-center",
+        className
+      )}
+    >
       <Image
-        src="/images/Logo.png"
+        src={light ? "/images/full-logo-light.png" : "/images/full-logo.png"}
         alt="LegalMind 로고"
         width={width}
         height={height}
@@ -37,7 +41,11 @@ export default function Logo({
   );
 
   if (href) {
-    return <Link href={href} className={fullWidth ? "w-full block" : ""}>{logoContent}</Link>;
+    return (
+      <Link href={href} className={fullWidth ? "w-full block" : ""}>
+        {logoContent}
+      </Link>
+    );
   }
 
   return logoContent;

@@ -1,35 +1,33 @@
-"use client";
-
 import { IoArrowBackOutline, IoArrowForwardOutline } from "react-icons/io5";
 
+import { TbMinusVertical } from "react-icons/tb";
 import { cn } from "@/lib/utils";
 
-interface ISideBarButtonProps {
+interface SideBarButtonProps {
   isSidebarVisible: boolean;
   toggleSidebar: () => void;
 }
 
-export default function SideBarButton({
+const SideBarButton: React.FC<SideBarButtonProps> = ({
   isSidebarVisible,
   toggleSidebar,
-}: ISideBarButtonProps) {
+}) => {
   return (
     <button
-      onClick={toggleSidebar}
       className={cn(
-        "absolute top-4 left-4 z-50",
-        "md:flex hidden items-center justify-center",
-        "w-8 h-8 rounded-full",
-        "bg-primary text-primary-foreground",
-        "hover:bg-primary/90 transition-colors"
+        "hidden md:flex",
+        "absolute top-1/2 left-2 transform -translate-y-1/2 items-center group text-foreground cursor-pointer"
       )}
-      aria-label={isSidebarVisible ? "사이드바 닫기" : "사이드바 열기"}
+      onClick={toggleSidebar}
     >
+      <TbMinusVertical className="text-2xl" />
       {isSidebarVisible ? (
-        <IoArrowBackOutline className="w-4 h-4" />
+        <IoArrowBackOutline className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       ) : (
-        <IoArrowForwardOutline className="w-4 h-4" />
+        <IoArrowForwardOutline className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       )}
     </button>
   );
-} 
+};
+
+export default SideBarButton;
