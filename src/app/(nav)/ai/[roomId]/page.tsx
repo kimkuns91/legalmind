@@ -4,12 +4,14 @@ import ChatInterface from '@/components/ai/ChatInterface';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-interface AiPageProps {
-  params: { roomId: string };
-}
+// Next.js 15에서는 params가 Promise 타입이어야 함
+type PageProps = {
+  params: Promise<{ roomId: string }>;
+};
 
-export default async function AiPage({ params }: AiPageProps) {
-  const { roomId } = params;
+export default async function AiPage({ params }: PageProps) {
+  const resolvedParams = await params;
+  const { roomId } = resolvedParams;
 
   // 사용자 인증 확인
   const session = await auth();

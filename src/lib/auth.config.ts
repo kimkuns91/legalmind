@@ -11,6 +11,7 @@ import Google from 'next-auth/providers/google';
 import type { JWT } from '@auth/core/jwt';
 import Kakao from 'next-auth/providers/kakao';
 import type { Session } from '@auth/core/types';
+// bcryptjs는 Edge Runtime에서 지원되지 않으므로 주석으로 표시
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 

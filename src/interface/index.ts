@@ -70,7 +70,7 @@ export interface IDocument {
   content?: string | null;
   fileUrl?: string | null;
   fileType?: string | null;
-  documentType: string;
+  documentType: DocumentType;
   createdAt: Date;
   updatedAt: Date;
   userId: string;
@@ -84,4 +84,16 @@ export enum DocumentType {
   AGREEMENT = 'agreement',
   POWER_OF_ATTORNEY = 'powerOfAttorney',
   OTHER = 'other',
+}
+
+// 문서 요청 인터페이스 (AI 채팅에서 사용)
+export interface IDocumentRequest {
+  id: string;
+  documentType: DocumentType;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  parameters: Record<string, any>;
+  fileUrl?: string;
+  conversationId: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
