@@ -44,11 +44,13 @@ const Intro = ({ userId }: IntroProps) => {
       setIsSubmitting(true);
       setError(null);
 
-      // 서버 액션 호출하여 대화 생성 및 리다이렉트
-      await createConversationAndRedirect(message);
+      // 서버 액션 호출하여 대화 생성 및 URL 받기
+      const result = await createConversationAndRedirect(message);
 
-      // 서버 액션에서 리다이렉트가 발생하므로 아래 코드는 실행되지 않음
-      // 하지만 만약 리다이렉트가 실패할 경우를 대비해 상태 초기화
+      // 서버 액션에서 반환된 URL로 리다이렉트
+      if (result?.redirectUrl) {
+        window.location.href = result.redirectUrl;
+      }
       setMessage('');
       setIsSubmitting(false);
     } catch (err) {
