@@ -1,5 +1,4 @@
-import Image from 'next/image';
-import Link from 'next/link';
+import Logo from '@/components/common/Logo';
 import SignInForm from '@/components/auth/SignInForm';
 import { cn } from '@/lib/utils';
 
@@ -8,18 +7,9 @@ export default function LoginPage() {
     <div className="from-background to-background/80 flex min-h-screen items-center justify-center bg-gradient-to-b p-4 transition-all duration-300 dark:from-gray-950 dark:to-gray-900">
       <div className="border-border bg-card w-full max-w-md rounded-xl border p-6 shadow-sm transition-all duration-300 dark:border-gray-800 dark:bg-gray-900/50 dark:shadow-lg">
         {/* 로고 */}
-        <Link
-          href="/"
-          className="mb-8 flex justify-center transition-transform duration-300 hover:scale-105"
-        >
-          <Image
-            src="/images/logo.png"
-            alt="Logo"
-            width={200}
-            height={70}
-            className="cursor-pointer rounded-xl"
-          />
-        </Link>
+        <div className="flex items-center justify-center py-8">
+          <Logo width={240} height={80} light />
+        </div>
 
         {/* 제목과 설명 */}
         <h1

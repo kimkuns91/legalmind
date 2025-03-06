@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: '개인정보처리방침 | LegalMind',
-  description: 'LegalMind의 개인정보처리방침에 대해 알아보세요.',
+  title: '개인정보처리방침 | 해주세요',
+  description: '해주세요의 개인정보처리방침에 대해 알아보세요.',
 };
 
 export default function PrivacyPolicyPage() {
@@ -12,7 +12,8 @@ export default function PrivacyPolicyPage() {
         <div className="mb-12 text-center">
           <h1 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl">개인정보처리방침</h1>
           <p className="text-lg text-gray-600">
-            LegalMind는 이용자의 개인정보를 소중히 여기며 관련 법규를 준수합니다.
+            <span className="font-medium">해주세요</span>는 이용자의 개인정보를 소중히 여기며 관련
+            법규를 준수합니다.
           </p>
           <div className="mt-6 text-sm text-gray-500">최종 업데이트: 2023년 12월 1일</div>
         </div>
@@ -22,7 +23,10 @@ export default function PrivacyPolicyPage() {
             <h2 className="mb-4 text-2xl font-bold text-gray-900">
               1. 개인정보의 수집 및 이용 목적
             </h2>
-            <p>LegalMind는 다음과 같은 목적으로 개인정보를 수집하고 이용합니다:</p>
+            <p>
+              <span className="font-medium">해주세요</span>는 다음과 같은 목적으로 개인정보를
+              수집하고 이용합니다:
+            </p>
             <ul className="ml-6 list-disc space-y-2">
               <li>서비스 제공 및 계약 이행</li>
               <li>회원 관리 및 서비스 이용 기록 관리</li>
@@ -34,7 +38,10 @@ export default function PrivacyPolicyPage() {
 
           <section className="mb-10">
             <h2 className="mb-4 text-2xl font-bold text-gray-900">2. 수집하는 개인정보 항목</h2>
-            <p>LegalMind는 서비스 제공을 위해 다음과 같은 개인정보를 수집합니다:</p>
+            <p>
+              <span className="font-medium">해주세요</span>는 서비스 제공을 위해 다음과 같은
+              개인정보를 수집합니다:
+            </p>
             <div className="mt-4 overflow-hidden rounded-lg border border-gray-200">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
@@ -90,9 +97,10 @@ export default function PrivacyPolicyPage() {
               3. 개인정보의 보유 및 이용 기간
             </h2>
             <p>
-              LegalMind는 원칙적으로 개인정보 수집 및 이용 목적이 달성된 후에는 해당 정보를 지체
-              없이 파기합니다. 다만, 관련 법령에 의해 보존할 필요가 있는 경우 아래와 같이 관련
-              법령에서 정한 일정한 기간 동안 개인정보를 보관합니다.
+              <span className="font-medium">해주세요</span>는 원칙적으로 개인정보 수집 및 이용
+              목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다. 다만, 관련 법령에 의해 보존할
+              필요가 있는 경우 아래와 같이 관련 법령에서 정한 일정한 기간 동안 개인정보를
+              보관합니다.
             </p>
             <ul className="ml-6 list-disc space-y-2">
               <li>
@@ -115,8 +123,8 @@ export default function PrivacyPolicyPage() {
               4. 개인정보의 파기 절차 및 방법
             </h2>
             <p>
-              LegalMind는 개인정보 보유기간의 경과, 처리목적 달성 등 개인정보가 불필요하게 되었을
-              때에는 지체없이 해당 개인정보를 파기합니다.
+              <span className="font-medium">해주세요</span>는 개인정보 보유기간의 경과, 처리목적
+              달성 등 개인정보가 불필요하게 되었을 때에는 지체없이 해당 개인정보를 파기합니다.
             </p>
             <p className="mt-2">
               <strong>파기 절차:</strong> 이용자가 입력한 정보는 목적 달성 후 별도의 DB에 옮겨져
@@ -148,17 +156,17 @@ export default function PrivacyPolicyPage() {
           <section className="mb-10">
             <h2 className="mb-4 text-2xl font-bold text-gray-900">6. 개인정보 보호책임자</h2>
             <p>
-              LegalMind는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 개인정보 처리와 관련한
-              이용자의 불만처리 및 피해구제 등을 위하여 아래와 같이 개인정보 보호책임자를 지정하고
-              있습니다.
+              <span className="font-medium">해주세요</span>는 개인정보 처리에 관한 업무를 총괄해서
+              책임지고, 개인정보 처리와 관련한 이용자의 불만처리 및 피해구제 등을 위하여 아래와 같이
+              개인정보 보호책임자를 지정하고 있습니다.
             </p>
             <div className="mt-4 rounded-lg bg-gray-50 p-4">
               <p>
                 <strong>개인정보 보호책임자</strong>
               </p>
-              <p className="mt-2">이름: 홍길동</p>
+              <p className="mt-2">이름: 김건우</p>
               <p>직위: 개인정보 보호팀장</p>
-              <p>연락처: privacy@legalmind.com</p>
+              <p>연락처: whitemousedev@gmail.com</p>
             </div>
           </section>
 

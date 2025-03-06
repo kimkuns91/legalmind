@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 
 import { FaArrowRight } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
@@ -18,6 +18,7 @@ const Intro = ({ userId }: IntroProps) => {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // 클라이언트 사이드에서만 테마 관련 기능 사용
   useEffect(() => {
@@ -35,7 +36,7 @@ const Intro = ({ userId }: IntroProps) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (!message.trim()) {
+    if (!message.trim() || isSubmitting) {
       return;
     }
 
@@ -56,6 +57,25 @@ const Intro = ({ userId }: IntroProps) => {
       console.error('대화 생성 중 오류:', err);
     }
   };
+
+  // Enter 키로 제출, Shift+Enter로 줄바꿈
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e as unknown as FormEvent);
+    }
+  };
+
+  // 자동 높이 조절 (textarea)
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      const minHeight = 96; // 4줄 기본 높이 (1.5em * 4 = 6em = 96px)
+      const maxHeight = 192; // 8줄 최대 높이 (1.5em * 8 = 12em = 192px)
+      const scrollHeight = textareaRef.current.scrollHeight;
+      textareaRef.current.style.height = `${Math.min(Math.max(minHeight, scrollHeight), maxHeight)}px`;
+    }
+  }, [message]);
 
   // 애니메이션 변수 정의
   const containerVariants = {
@@ -137,15 +157,12 @@ const Intro = ({ userId }: IntroProps) => {
             )}
           >
             <textarea
+              ref={textareaRef}
               className="text-foreground placeholder:text-muted-foreground flex-1 resize-none overflow-hidden bg-transparent p-2 focus:outline-none"
-              style={{
-                minHeight: 'calc(1.5em * 4)',
-                maxHeight: 'calc(1.5em * 8)',
-                lineHeight: '1.5em',
-              }}
               placeholder="해주세요 법률 전문가에게 법률 상담을 해보세요."
               value={message}
               onChange={e => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
               disabled={isSubmitting}
             />
             <div className="flex items-end justify-end">

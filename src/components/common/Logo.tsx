@@ -25,7 +25,7 @@ export default function Logo({
     <div className={cn('flex items-center', fullWidth && 'w-full justify-center', className)}>
       <Image
         src={light ? '/images/full-logo-light.png' : '/images/full-logo.png'}
-        alt="LegalMind 로고"
+        alt="해주세요 로고"
         width={width}
         height={height}
         className="object-contain"

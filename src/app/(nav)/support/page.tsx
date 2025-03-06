@@ -3,9 +3,9 @@ import { Clock, FileText, HelpCircle, Mail, MessageCircle, Phone } from 'lucide-
 import Link from 'next/link';
 
 export const metadata = {
-  title: '고객 지원 | LegalMind',
+  title: '고객 지원 | 해주세요',
   description:
-    'LegalMind의 고객 지원 서비스에 대해 알아보세요. 자주 묻는 질문, 문의 방법 등을 확인할 수 있습니다.',
+    '해주세요의 고객 지원 서비스에 대해 알아보세요. 자주 묻는 질문, 문의 방법 등을 확인할 수 있습니다.',
 };
 
 export default function SupportPage() {
@@ -31,10 +31,10 @@ export default function SupportPage() {
               <h3 className="mb-2 text-xl font-semibold text-gray-900">이메일 문의</h3>
               <p className="mb-4 text-gray-600">평일 09:00 - 18:00 이내 답변을 드립니다.</p>
               <a
-                href="mailto:support@legalmind.com"
+                href="mailto:whitemousedev@gmail.com"
                 className="text-orange-600 hover:text-orange-700"
               >
-                support@legalmind.com
+                whitemousedev@gmail.com
               </a>
             </div>
 
@@ -160,7 +160,8 @@ export default function SupportPage() {
               </div>
               <h3 className="mb-2 text-xl font-semibold text-gray-900">이용 가이드</h3>
               <p className="mb-4 text-gray-600">
-                LegalMind 서비스 이용 방법에 대한 상세한 가이드를 제공합니다.
+                <span className="font-medium">해주세요</span> 서비스 이용 방법에 대한 상세한
+                가이드를 제공합니다.
               </p>
               <Link
                 href="/guide"

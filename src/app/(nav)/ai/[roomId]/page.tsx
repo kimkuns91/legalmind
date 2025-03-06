@@ -43,7 +43,7 @@ export default async function AiPage({ params }: AiPageProps) {
     }
 
     return (
-      <div className="flex h-full w-full flex-col">
+      <div className="flex h-screen w-full flex-col">
         <ChatInterface conversation={conversation} messages={conversation.messages} />
       </div>
     );

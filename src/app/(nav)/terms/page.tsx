@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: '이용약관 | LegalMind',
-  description: 'LegalMind의 이용약관에 대해 알아보세요.',
+  title: '이용약관 | 해주세요',
+  description: '해주세요의 이용약관에 대해 알아보세요.',
 };
 
 export default function TermsOfServicePage() {
@@ -11,17 +11,19 @@ export default function TermsOfServicePage() {
       <div className="container mx-auto max-w-4xl px-4">
         <div className="mb-12 text-center">
           <h1 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl">이용약관</h1>
-          <p className="text-lg text-gray-600">LegalMind 서비스 이용에 관한 약관입니다.</p>
-          <div className="mt-6 text-sm text-gray-500">최종 업데이트: 2023년 12월 1일</div>
+          <p className="text-lg text-gray-600">
+            <span className="font-medium">해주세요</span> 서비스 이용에 관한 약관입니다.
+          </p>
+          <div className="mt-6 text-sm text-gray-500">최종 업데이트: 2025년 03월 06일</div>
         </div>
 
         <div className="prose prose-lg mx-auto max-w-none text-gray-600">
           <section className="mb-10">
             <h2 className="mb-4 text-2xl font-bold text-gray-900">제1조 (목적)</h2>
             <p>
-              이 약관은 LegalMind(이하 &quot;회사&quot;라 함)가 제공하는 법률 정보 서비스(이하
-              &quot;서비스&quot;라 함)의 이용과 관련하여 회사와 이용자 간의 권리, 의무 및 책임사항,
-              기타 필요한 사항을 규정함을 목적으로 합니다.
+              이 약관은 <span className="font-medium">해주세요</span>(이하 &quot;회사&quot;라 함)가
+              제공하는 법률 정보 서비스(이하 &quot;서비스&quot;라 함)의 이용과 관련하여 회사와
+              이용자 간의 권리, 의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.
             </p>
           </section>
 

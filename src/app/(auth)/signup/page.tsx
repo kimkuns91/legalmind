@@ -1,5 +1,4 @@
-import Image from 'next/image';
-import Link from 'next/link';
+import Logo from '@/components/common/Logo';
 import SignUpForm from '@/components/auth/SignUpForm';
 import { cn } from '@/lib/utils';
 
@@ -8,15 +7,9 @@ export default function SignUpPage() {
     <div className="from-background to-background/80 flex min-h-screen items-center justify-center bg-gradient-to-b p-4 transition-colors duration-300 dark:from-black dark:to-gray-900">
       <div className="flex w-full max-w-sm flex-col items-center">
         {/* 로고 */}
-        <Link href="/" className="mb-8 transition-transform duration-300 hover:scale-105">
-          <Image
-            src="/images/logo.png"
-            alt="Logo"
-            width={240}
-            height={80}
-            className="cursor-pointer rounded-xl"
-          />
-        </Link>
+        <div className="flex items-center justify-center py-8">
+          <Logo width={240} height={80} light />
+        </div>
 
         {/* 제목과 설명 */}
         <h1

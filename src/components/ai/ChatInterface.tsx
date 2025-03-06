@@ -3,8 +3,11 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 
+import { BiCheck } from 'react-icons/bi';
 import { FaUser } from 'react-icons/fa';
+import { FiMoreHorizontal } from 'react-icons/fi';
 import { IoSend } from 'react-icons/io5';
+import { MdOutlineContentCopy } from 'react-icons/md';
 import ReactMarkdown from 'react-markdown';
 import { RiRobot2Fill } from 'react-icons/ri';
 import { cn } from '@/lib/utils';
@@ -36,8 +39,10 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
   const [newMessage, setNewMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // 메시지 목록이 업데이트될 때마다 스크롤을 맨 아래로 이동
   useEffect(() => {
@@ -85,6 +90,19 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
     }
   };
 
+  // 메시지 복사 기능
+  const copyMessageToClipboard = (content: string, messageId: string) => {
+    navigator.clipboard.writeText(content).then(
+      () => {
+        setCopiedMessageId(messageId);
+        setTimeout(() => setCopiedMessageId(null), 2000);
+      },
+      err => {
+        console.error('메시지 복사 실패:', err);
+      }
+    );
+  };
+
   // 애니메이션 변수 정의
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -102,28 +120,26 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
   };
 
   return (
-    <div className="flex h-full w-full flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="bg-background text-foreground flex h-full w-full flex-col">
       {/* 대화 제목 */}
-      <div className="border-b bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-        <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-          {conversation.title}
-        </h1>
+      <div className="border-border bg-card border-b p-4 shadow-sm">
+        <h1 className="text-card-foreground text-xl font-semibold">{conversation.title}</h1>
       </div>
 
       {/* 메시지 목록 */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto" ref={chatContainerRef}>
         <motion.div
-          className="mx-auto max-w-3xl px-4 py-6"
+          className="mx-auto w-full max-w-4xl"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
           {messages.length === 0 ? (
-            <div className="flex h-full items-center justify-center">
-              <div className="text-center text-gray-500 dark:text-gray-400">
-                <RiRobot2Fill className="mx-auto mb-3 h-12 w-12 text-gray-300 dark:text-gray-600" />
-                <p className="text-lg font-medium">대화를 시작해보세요</p>
-                <p className="mt-1">법률 관련 질문을 입력하시면 AI가 답변해 드립니다.</p>
+            <div className="flex h-full items-center justify-center py-20">
+              <div className="text-muted-foreground text-center">
+                <RiRobot2Fill className="text-muted-foreground/60 mx-auto mb-3 h-16 w-16" />
+                <p className="text-xl font-medium">대화를 시작해보세요</p>
+                <p className="mt-2">법률 관련 질문을 입력하시면 AI가 답변해 드립니다.</p>
               </div>
             </div>
           ) : (
@@ -131,87 +147,105 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
               <motion.div
                 key={message.id}
                 variants={messageVariants}
-                className={cn('mb-6', message.role === 'user' ? 'ml-12' : 'mr-12')}
+                className={cn(
+                  'group border-border w-full border-b',
+                  message.role === 'user' ? 'bg-background' : 'bg-card'
+                )}
               >
-                {/* 메시지 헤더 (아이콘 + 이름) */}
-                <div
-                  className={cn(
-                    'mb-2 flex items-center',
-                    message.role === 'user' ? 'justify-end' : 'justify-start'
-                  )}
-                >
-                  {message.role !== 'user' && (
-                    <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
-                      <RiRobot2Fill className="h-5 w-5" />
-                    </div>
-                  )}
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {message.role === 'user' ? '사용자' : '법률 AI'}
-                  </span>
-                  {message.role === 'user' && (
-                    <div className="ml-2 flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white">
-                      <FaUser className="h-4 w-4" />
-                    </div>
-                  )}
-                </div>
-
-                {/* 메시지 내용 */}
-                <div
-                  className={cn(
-                    'rounded-2xl p-4 shadow-sm',
-                    message.role === 'user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-100'
-                  )}
-                >
-                  <div className="prose prose-sm dark:prose-invert max-w-none">
-                    <ReactMarkdown>{message.content}</ReactMarkdown>
-                  </div>
-                  <div
-                    className={cn(
-                      'mt-2 text-right text-xs',
-                      message.role === 'user' ? 'text-blue-200' : 'text-gray-500 dark:text-gray-400'
+                <div className="mx-auto flex w-full max-w-4xl p-4 md:px-8 md:py-6">
+                  {/* 아이콘 */}
+                  <div className="mr-4 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full">
+                    {message.role === 'user' ? (
+                      <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full">
+                        <FaUser className="h-4 w-4" />
+                      </div>
+                    ) : (
+                      <div className="bg-chart-1 flex h-8 w-8 items-center justify-center rounded-full text-white">
+                        <RiRobot2Fill className="h-5 w-5" />
+                      </div>
                     )}
-                  >
-                    {new Date(message.createdAt).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
+                  </div>
+
+                  {/* 메시지 내용 */}
+                  <div className="flex-1 overflow-hidden">
+                    <div className="text-muted-foreground mb-1 text-sm font-medium">
+                      {message.role === 'user' ? '사용자' : '해주세요 AI'}
+                    </div>
+                    <div className="prose prose-invert dark:prose-invert max-w-none">
+                      <ReactMarkdown>{message.content}</ReactMarkdown>
+                    </div>
+                  </div>
+
+                  {/* 메시지 액션 버튼 */}
+                  <div className="ml-2 flex items-start opacity-0 transition-opacity group-hover:opacity-100">
+                    <button
+                      onClick={() => copyMessageToClipboard(message.content, message.id)}
+                      className="text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded p-1"
+                      aria-label="메시지 복사"
+                      title="메시지 복사"
+                    >
+                      {copiedMessageId === message.id ? (
+                        <BiCheck className="h-5 w-5 text-green-500" />
+                      ) : (
+                        <MdOutlineContentCopy className="h-5 w-5" />
+                      )}
+                    </button>
+                    <button
+                      className="text-muted-foreground hover:bg-accent hover:text-accent-foreground ml-1 rounded p-1"
+                      aria-label="더 보기"
+                      title="더 보기"
+                    >
+                      <FiMoreHorizontal className="h-5 w-5" />
+                    </button>
                   </div>
                 </div>
               </motion.div>
             ))
           )}
-          <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} className="h-4" />
 
           {/* 로딩 표시기 */}
           {isSubmitting && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mr-12 mb-6">
-              <div className="mb-2 flex items-center">
-                <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300">
-                  <RiRobot2Fill className="h-5 w-5" />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="bg-card border-border w-full border-b"
+            >
+              <div className="mx-auto flex w-full max-w-4xl p-4 md:px-8 md:py-6">
+                <div className="mr-4 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full">
+                  <div className="bg-chart-1 flex h-8 w-8 items-center justify-center rounded-full text-white">
+                    <RiRobot2Fill className="h-5 w-5" />
+                  </div>
                 </div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  법률 AI
-                </span>
-              </div>
-              <div className="rounded-2xl bg-white p-4 shadow-sm dark:bg-gray-800">
-                <div className="flex items-center space-x-1">
-                  <motion.div
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ repeat: Infinity, duration: 1, delay: 0 }}
-                    className="h-2 w-2 rounded-full bg-gray-400 dark:bg-gray-500"
-                  />
-                  <motion.div
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ repeat: Infinity, duration: 1, delay: 0.2 }}
-                    className="h-2 w-2 rounded-full bg-gray-400 dark:bg-gray-500"
-                  />
-                  <motion.div
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ repeat: Infinity, duration: 1, delay: 0.4 }}
-                    className="h-2 w-2 rounded-full bg-gray-400 dark:bg-gray-500"
-                  />
+                <div className="flex-1">
+                  <div className="text-muted-foreground mb-1 text-sm font-medium">해주세요 AI</div>
+                  <div className="flex items-center space-x-2">
+                    <motion.div
+                      animate={{ opacity: [0.4, 1, 0.4] }}
+                      transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                      className="bg-muted-foreground/60 h-2 w-2 rounded-full"
+                    />
+                    <motion.div
+                      animate={{ opacity: [0.4, 1, 0.4] }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1.5,
+                        ease: 'easeInOut',
+                        delay: 0.2,
+                      }}
+                      className="bg-muted-foreground/60 h-2 w-2 rounded-full"
+                    />
+                    <motion.div
+                      animate={{ opacity: [0.4, 1, 0.4] }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 1.5,
+                        ease: 'easeInOut',
+                        delay: 0.4,
+                      }}
+                      className="bg-muted-foreground/60 h-2 w-2 rounded-full"
+                    />
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -226,13 +260,13 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="mx-auto mb-2 w-full max-w-3xl px-4"
+            className="mx-auto mb-2 w-full max-w-4xl px-4"
           >
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-500 dark:bg-red-900/20 dark:text-red-300">
+            <div className="bg-destructive/20 text-destructive-foreground border-destructive/50 rounded-md border p-3 text-sm">
               <div className="flex">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="mr-2 h-5 w-5 text-red-400"
+                  className="text-destructive mr-2 h-5 w-5"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -250,12 +284,12 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
       </AnimatePresence>
 
       {/* 메시지 입력 폼 */}
-      <div className="border-t bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
-        <form onSubmit={handleSubmit} className="mx-auto max-w-3xl">
-          <div className="relative rounded-xl border bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+      <div className="border-border bg-card border-t p-4">
+        <form onSubmit={handleSubmit} className="mx-auto max-w-4xl">
+          <div className="border-input bg-background relative rounded-xl border shadow-sm">
             <textarea
               ref={inputRef}
-              className="w-full resize-none rounded-xl border-0 bg-transparent py-3 pr-12 pl-4 text-gray-900 placeholder:text-gray-400 focus:ring-0 focus:outline-none dark:text-white"
+              className="text-foreground placeholder:text-muted-foreground w-full resize-none rounded-xl border-0 bg-transparent py-3 pr-12 pl-4 focus:ring-0 focus:outline-none"
               placeholder="메시지를 입력하세요..."
               value={newMessage}
               onChange={e => setNewMessage(e.target.value)}
@@ -269,16 +303,16 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
               whileTap={{ scale: 0.95 }}
               disabled={isSubmitting || !newMessage.trim()}
               className={cn(
-                'absolute right-2 bottom-2 rounded-lg bg-blue-600 p-2 text-white transition-colors',
+                'bg-chart-1 absolute right-2 bottom-2 rounded-lg p-2 text-white transition-colors',
                 isSubmitting || !newMessage.trim()
                   ? 'cursor-not-allowed opacity-50'
-                  : 'hover:bg-blue-700'
+                  : 'hover:bg-chart-1/90'
               )}
             >
               <IoSend className="h-5 w-5" />
             </motion.button>
           </div>
-          <p className="mt-2 text-center text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-muted-foreground mt-2 text-center text-xs">
             Enter 키를 눌러 전송하거나 Shift+Enter로 줄바꿈을 할 수 있습니다.
           </p>
         </form>

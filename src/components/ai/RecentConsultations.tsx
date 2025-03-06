@@ -95,7 +95,7 @@ const RecentConsultations = () => {
       {data.map(conversation => (
         <div
           key={conversation.id}
-          onClick={() => router.push(`/chat/${conversation.id}`)}
+          onClick={() => router.push(`/ai/${conversation.id}`)}
           className={cn(
             'rounded-md bg-[#121212] p-4',
             'cursor-pointer hover:bg-zinc-900',
@@ -120,17 +120,6 @@ const RecentConsultations = () => {
           </div>
         </div>
       ))}
-
-      <Link
-        href="/chat"
-        className={cn(
-          'mt-2 rounded-full px-6 py-3 text-center text-sm font-medium',
-          'bg-green-500 text-black hover:bg-green-400',
-          'transition-colors duration-200'
-        )}
-      >
-        새 상담 시작하기
-      </Link>
     </div>
   );
 };
