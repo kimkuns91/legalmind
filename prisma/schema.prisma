@@ -19,11 +19,12 @@ model User {
   updatedAt      DateTime  @updatedAt
 
   // 관계
-  accounts       Account[]
-  sessions       Session[]
-  conversations  Conversation[]
-  messages       Message[]
-  documents      Document[]
+  accounts         Account[]
+  sessions         Session[]
+  conversations    Conversation[]
+  messages         Message[]
+  documents        Document[]
+  documentRequests DocumentRequest[]
 }
 
 // OAuth 계정 모델
@@ -76,10 +77,12 @@ model Conversation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   userId    String   @db.ObjectId
+  metadata  Json?    // 대화 메타데이터 (문서 요청 정보 등)
 
   // 관계
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages Message[]
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages         Message[]
+  documentRequests DocumentRequest[]
 }
 
 // 메시지 모델
@@ -113,4 +116,21 @@ model Document {
 
   // 관계
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// 문서 요청 모델
+model DocumentRequest {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  documentType  String   // 'lease', 'agreement', 'power_of_attorney', etc.
+  status        String   // 'pending', 'processing', 'completed', 'failed'
+  parameters    Json     // 문서 생성에 필요한 파라미터
+  fileUrl       String?  // 생성된 문서 URL
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  conversationId String   @db.ObjectId
+  userId        String   @db.ObjectId
+
+  // 관계
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
