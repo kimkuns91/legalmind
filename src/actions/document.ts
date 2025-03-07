@@ -1,5 +1,8 @@
 'use server';
 
+import { PDFDocument, StandardFonts } from 'pdf-lib';
+import { getFileUrl, uploadFile } from '@/lib/s3-utils';
+
 import { Prisma } from '@prisma/client';
 import { auth } from '@/lib/auth';
 import { createStreamableValue } from 'ai/rsc';
@@ -256,21 +259,81 @@ async function fillDocumentTemplate(template: any, parameters: Prisma.JsonValue,
 
 /**
  * 문서 파일 생성
+ *
+ * 채워진 템플릿을 기반으로 PDF 문서를 생성하고 S3에 업로드합니다.
+ *
  * @param filledTemplate 채워진 템플릿
  * @param documentType 문서 유형
  * @returns 생성된 파일 URL
  */
 async function generateDocumentFile(filledTemplate: any, documentType: string) {
-  // 실제 구현에서는 PDF 생성 라이브러리 사용
-  // 현재는 임시 URL 반환
-  const timestamp = Date.now();
-  const fileName = `${documentType}_${timestamp}.pdf`;
+  try {
+    // PDF 문서 생성
+    const pdfDoc = await PDFDocument.create();
+    const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
 
-  // 실제 구현에서는 파일 생성 및 저장 로직 추가
-  // 예: AWS S3, Firebase Storage 등에 저장
+    const page = pdfDoc.addPage();
+    const { width, height } = page.getSize();
 
-  // 임시 URL 반환 (실제 구현에서는 실제 URL로 대체)
-  return `/documents/${fileName}`;
+    // 제목 추가
+    page.drawText(filledTemplate.title, {
+      x: width / 2 - 150,
+      y: height - 50,
+      size: 20,
+      font: timesRomanFont,
+    });
+
+    // 내용 추가 (섹션별로)
+    let yPosition = height - 100;
+    if (filledTemplate.sections) {
+      for (const section of filledTemplate.sections) {
+        page.drawText(section.title, {
+          x: 50,
+          y: yPosition,
+          size: 14,
+          font: timesRomanFont,
+        });
+
+        yPosition -= 30;
+
+        if (section.content) {
+          // 내용이 있는 경우 추가
+          page.drawText(section.content, {
+            x: 50,
+            y: yPosition,
+            size: 12,
+            font: timesRomanFont,
+          });
+
+          yPosition -= 20;
+        }
+      }
+    }
+
+    // PDF를 바이트 배열로 저장
+    const pdfBytes = await pdfDoc.save();
+
+    // 파일 이름 생성 (고유한 이름)
+    const fileName = `${documentType}_${Date.now()}.pdf`;
+
+    // S3에 업로드
+    const fileKey = await uploadFile(
+      Buffer.from(pdfBytes),
+      fileName,
+      'application/pdf',
+      'legal-documents'
+    );
+
+    // 서명된 URL 생성 (24시간 유효)
+    const fileUrl = await getFileUrl(fileKey, 86400);
+
+    console.log(`문서 생성 완료: ${fileName}, URL: ${fileUrl}`);
+
+    return fileUrl;
+  } catch (error) {
+    console.error('문서 파일 생성 중 오류 발생:', error);
+    throw new Error('문서 파일을 생성하는 중 오류가 발생했습니다.');
+  }
 }
 
 /**
