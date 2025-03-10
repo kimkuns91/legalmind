@@ -1,36 +1,23 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
-import { FormEvent, useEffect, useRef, useState } from 'react';
-import { generateAiResponse, sendMessage } from '@/actions/chat';
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { IConversation, IMessage } from '@/interface';
+import { generateAiResponse, sendMessage } from '@/actions';
 
 import { BiCheck } from 'react-icons/bi';
 import { FaUser } from 'react-icons/fa';
 import { FiMoreHorizontal } from 'react-icons/fi';
 import { IoSend } from 'react-icons/io5';
+import Loading from '../common/Loading';
 import { MdOutlineContentCopy } from 'react-icons/md';
 import ReactMarkdown from 'react-markdown';
 import { RiRobot2Fill } from 'react-icons/ri';
 import { cn } from '@/lib/utils';
 import { readStreamableValue } from 'ai/rsc';
-
-interface IMessage {
-  id: string;
-  content: string;
-  role: string;
-  createdAt: Date;
-  userId: string;
-  conversationId: string;
-}
-
-interface IConversation {
-  id: string;
-  title: string;
-  createdAt: Date;
-  updatedAt: Date;
-  userId: string;
-  messages: IMessage[];
-}
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
+import { useRouter } from 'next/navigation';
 
 interface ChatInterfaceProps {
   conversation: IConversation;
@@ -48,6 +35,128 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const initialLoadRef = useRef<boolean>(true);
   const hasSetInitialMessagesRef = useRef<boolean>(false);
+  const router = useRouter();
+
+  // 자동 AI 응답 요청 핸들러 (첫 로드 시)
+  const handleInitialResponse = useCallback(async () => {
+    try {
+      setIsSubmitting(true);
+
+      // AI 응답 메시지 준비 (로딩 상태)
+      const aiMessage: IMessage = {
+        id: Date.now().toString(), // 임시 ID
+        content: '응답을 생성하고 있습니다...',
+        role: 'assistant',
+        createdAt: new Date(),
+        userId: '', // 서버에서 설정됨
+        conversationId: conversation.id,
+      };
+
+      // 메시지 목록에 AI 메시지 추가 (로딩 상태로)
+      setLocalMessages(prevMessages => [...prevMessages, aiMessage]);
+
+      // AI 응답 생성 요청 (사용자 메시지는 이미 저장되어 있음)
+      const streamValue = await generateAiResponse(conversation.id);
+
+      // 스트림 값이 객체이고 success 속성만 있는 경우 (비스트리밍 응답)
+      if (streamValue && typeof streamValue === 'object' && 'success' in streamValue) {
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 스트림 처리
+      let accumulatedResponse = '';
+      let isFirstChunk = true;
+
+      try {
+        for await (const delta of readStreamableValue(streamValue)) {
+          // 첫 번째 청크가 도착하면 로딩 상태 해제
+          if (isFirstChunk) {
+            setIsSubmitting(false);
+            isFirstChunk = false;
+          }
+
+          // delta가 undefined일 수 있으므로 체크
+          if (delta !== undefined && delta !== null) {
+            // 새 청크를 누적 응답에 할당 (이전 응답을 덮어쓰지 않고 새 응답으로 설정)
+            accumulatedResponse = delta as string;
+
+            console.log(
+              '스트림 청크 받음:',
+              typeof delta === 'string' ? delta.substring(0, 50) + '...' : '비문자열 데이터'
+            );
+
+            // AI 메시지 업데이트
+            aiMessage.content = accumulatedResponse;
+
+            // 다운로드 링크가 포함된 메시지인지 확인
+            const hasDownloadLink = accumulatedResponse.includes('다운로드 링크');
+
+            console.log(
+              '스트림 업데이트 받음:',
+              hasDownloadLink ? '다운로드 링크 포함' : '일반 메시지',
+              accumulatedResponse.substring(0, 50) + '...'
+            );
+
+            // 로컬 메시지 상태 업데이트 - 최신 상태를 기반으로 업데이트
+            setLocalMessages(prevMessages => {
+              // 마지막 메시지(AI 메시지)를 제외한 모든 메시지
+              const messagesWithoutLastAi = prevMessages.slice(0, prevMessages.length - 1);
+              // 업데이트된 AI 메시지 추가 (깊은 복사를 통해 새 객체 생성)
+              return [...messagesWithoutLastAi, { ...aiMessage, content: accumulatedResponse }];
+            });
+
+            // 다운로드 링크가 포함된 메시지라면 스크롤을 즉시 아래로 이동하고 새로고침
+            if (hasDownloadLink) {
+              console.log('다운로드 링크 감지됨, 화면 새로고침 예약');
+              setTimeout(() => {
+                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+                // 다운로드 링크가 포함된 메시지를 받으면 즉시 새로고침
+                setTimeout(() => {
+                  console.log('다운로드 링크 감지로 인한 화면 새로고침');
+                  router.refresh();
+                }, 500);
+              }, 100);
+            }
+
+            // 스크롤을 맨 아래로 이동
+            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+
+        // 스트림 처리가 완료되면 최종 메시지로 업데이트
+        console.log('스트림 처리 완료, 최종 응답:', accumulatedResponse.substring(0, 50) + '...');
+
+        // 최종 메시지 상태 업데이트
+        setLocalMessages(prevMessages => {
+          // 마지막 메시지(AI 메시지)를 제외한 모든 메시지
+          const messagesWithoutLastAi = prevMessages.slice(0, prevMessages.length - 1);
+          // 최종 AI 메시지 추가
+          return [
+            ...messagesWithoutLastAi,
+            {
+              ...aiMessage,
+              content: accumulatedResponse,
+              id: Date.now().toString(), // 새 ID 할당하여 React가 변경을 감지하도록 함
+            },
+          ];
+        });
+
+        // 스트림 처리 완료 후 서버에서 최신 메시지를 가져오기 위해 새로고침
+        setTimeout(() => {
+          router.refresh();
+        }, 1000);
+      } catch (error) {
+        console.error('스트림 처리 중 오류 발생:', error);
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      setIsSubmitting(false);
+      setError(err instanceof Error ? err.message : '메시지를 전송하는 중 오류가 발생했습니다.');
+      console.error('메시지 전송 중 오류:', err);
+    }
+  }, [conversation.id, setLocalMessages, setIsSubmitting, router]);
 
   // 컴포넌트가 마운트될 때 서버에서 받은 메시지로 초기화
   useEffect(() => {
@@ -85,7 +194,7 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
         hasSetInitialMessagesRef.current = true;
       }
     }
-  }, [messages]);
+  }, [messages, handleInitialResponse]);
 
   // 메시지 목록이 업데이트될 때마다 스크롤을 맨 아래로 이동
   useEffect(() => {
@@ -101,65 +210,16 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
     }
   }, [newMessage]);
 
-  // 자동 AI 응답 요청 핸들러 (첫 로드 시)
-  const handleInitialResponse = async () => {
-    try {
-      setIsSubmitting(true);
+  // 메시지가 로딩 중인지 확인하는 함수
+  const isMessageLoading = (message: IMessage) => {
+    const documentGenerationPhrases = [
+      '문서 생성을 시작합니다',
+      '잠시만 기다려주세요',
+      '생성 중입니다',
+      '작성을 시작합니다',
+    ];
 
-      // AI 응답 메시지 준비 (로딩 상태)
-      const aiMessage: IMessage = {
-        id: Date.now().toString(), // 임시 ID
-        content: '',
-        role: 'assistant',
-        createdAt: new Date(),
-        userId: '', // 서버에서 설정됨
-        conversationId: conversation.id,
-      };
-
-      // 메시지 목록에 AI 메시지 추가 (빈 상태로)
-      setLocalMessages(prevMessages => [...prevMessages, aiMessage]);
-
-      // AI 응답 생성 요청 (사용자 메시지는 이미 저장되어 있음)
-      const streamValue = await generateAiResponse(conversation.id);
-
-      // 스트림에서 텍스트 읽기
-      let accumulatedResponse = '';
-      let isFirstChunk = true;
-
-      try {
-        for await (const delta of readStreamableValue(streamValue)) {
-          // 첫 번째 청크가 도착하면 로딩 상태 해제
-          if (isFirstChunk) {
-            setIsSubmitting(false);
-            isFirstChunk = false;
-          }
-
-          accumulatedResponse = delta;
-
-          // AI 메시지 업데이트
-          aiMessage.content = accumulatedResponse;
-
-          // 로컬 메시지 상태 업데이트 - 최신 상태를 기반으로 업데이트
-          setLocalMessages(prevMessages => {
-            // 마지막 메시지(AI 메시지)를 제외한 모든 메시지
-            const messagesWithoutLastAi = prevMessages.slice(0, prevMessages.length - 1);
-            // 업데이트된 AI 메시지 추가
-            return [...messagesWithoutLastAi, { ...aiMessage }];
-          });
-
-          // 스크롤을 맨 아래로 이동
-          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-        }
-      } catch (streamError) {
-        console.error('스트림 읽기 중 오류:', streamError);
-        setError('응답을 받는 중 오류가 발생했습니다.');
-        setIsSubmitting(false);
-      }
-    } catch (err) {
-      setIsSubmitting(false);
-      setError(err instanceof Error ? err.message : '메시지를 전송하는 중 오류가 발생했습니다.');
-      console.error('메시지 전송 중 오류:', err);
-    }
+    return documentGenerationPhrases.some(phrase => message.content.includes(phrase));
   };
 
   // 메시지 전송 핸들러
@@ -193,20 +253,26 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
       // AI 응답 메시지 준비 (로딩 상태)
       const aiMessage: IMessage = {
         id: (Date.now() + 1).toString(), // 임시 ID
-        content: '',
+        content: '응답을 생성하고 있습니다...',
         role: 'assistant',
         createdAt: new Date(),
         userId: '', // 서버에서 설정됨
         conversationId: conversation.id,
       };
 
-      // 메시지 목록에 AI 메시지 추가 (빈 상태로)
+      // 메시지 목록에 AI 메시지 추가 (로딩 상태로)
       setLocalMessages(prevMessages => [...prevMessages, aiMessage]);
 
       // 메시지 전송 및 스트림 받기
       const streamValue = await sendMessage(conversation.id, newMessage);
 
-      // 스트림에서 텍스트 읽기
+      // 스트림 값이 객체이고 success 속성만 있는 경우 (비스트리밍 응답)
+      if (streamValue && typeof streamValue === 'object' && 'success' in streamValue) {
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 스트림 처리
       let accumulatedResponse = '';
       let isFirstChunk = true;
 
@@ -218,25 +284,79 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
             isFirstChunk = false;
           }
 
-          accumulatedResponse = delta;
+          // delta가 undefined일 수 있으므로 체크
+          if (delta !== undefined && delta !== null) {
+            // 새 청크를 누적 응답에 할당 (이전 응답을 덮어쓰지 않고 새 응답으로 설정)
+            accumulatedResponse = delta as string;
 
-          // AI 메시지 업데이트
-          aiMessage.content = accumulatedResponse;
+            console.log(
+              '스트림 청크 받음:',
+              typeof delta === 'string' ? delta.substring(0, 50) + '...' : '비문자열 데이터'
+            );
 
-          // 로컬 메시지 상태 업데이트 - 최신 상태를 기반으로 업데이트
-          setLocalMessages(prevMessages => {
-            // 마지막 메시지(AI 메시지)를 제외한 모든 메시지
-            const messagesWithoutLastAi = prevMessages.slice(0, prevMessages.length - 1);
-            // 업데이트된 AI 메시지 추가
-            return [...messagesWithoutLastAi, { ...aiMessage }];
-          });
+            // AI 메시지 업데이트
+            aiMessage.content = accumulatedResponse;
 
-          // 스크롤을 맨 아래로 이동
-          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            // 다운로드 링크가 포함된 메시지인지 확인
+            const hasDownloadLink = accumulatedResponse.includes('다운로드 링크');
+
+            console.log(
+              '스트림 업데이트 받음:',
+              hasDownloadLink ? '다운로드 링크 포함' : '일반 메시지',
+              accumulatedResponse.substring(0, 50) + '...'
+            );
+
+            // 로컬 메시지 상태 업데이트 - 최신 상태를 기반으로 업데이트
+            setLocalMessages(prevMessages => {
+              // 마지막 메시지(AI 메시지)를 제외한 모든 메시지
+              const messagesWithoutLastAi = prevMessages.slice(0, prevMessages.length - 1);
+              // 업데이트된 AI 메시지 추가 (깊은 복사를 통해 새 객체 생성)
+              return [...messagesWithoutLastAi, { ...aiMessage, content: accumulatedResponse }];
+            });
+
+            // 다운로드 링크가 포함된 메시지라면 스크롤을 즉시 아래로 이동하고 새로고침
+            if (hasDownloadLink) {
+              console.log('다운로드 링크 감지됨, 화면 새로고침 예약');
+              setTimeout(() => {
+                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+                // 다운로드 링크가 포함된 메시지를 받으면 즉시 새로고침
+                setTimeout(() => {
+                  console.log('다운로드 링크 감지로 인한 화면 새로고침');
+                  router.refresh();
+                }, 500);
+              }, 100);
+            }
+
+            // 스크롤을 맨 아래로 이동
+            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+          }
         }
-      } catch (streamError) {
-        console.error('스트림 읽기 중 오류:', streamError);
-        setError('응답을 받는 중 오류가 발생했습니다.');
+
+        // 스트림 처리가 완료되면 최종 메시지로 업데이트
+        console.log('스트림 처리 완료, 최종 응답:', accumulatedResponse.substring(0, 50) + '...');
+
+        // 최종 메시지 상태 업데이트
+        setLocalMessages(prevMessages => {
+          // 마지막 메시지(AI 메시지)를 제외한 모든 메시지
+          const messagesWithoutLastAi = prevMessages.slice(0, prevMessages.length - 1);
+          // 최종 AI 메시지 추가
+          return [
+            ...messagesWithoutLastAi,
+            {
+              ...aiMessage,
+              content: accumulatedResponse,
+              id: Date.now().toString(), // 새 ID 할당하여 React가 변경을 감지하도록 함
+            },
+          ];
+        });
+
+        // 스트림 처리 완료 후 서버에서 최신 메시지를 가져오기 위해 새로고침
+        setTimeout(() => {
+          router.refresh();
+        }, 1000);
+      } catch (error) {
+        console.error('스트림 처리 중 오류 발생:', error);
         setIsSubmitting(false);
       }
     } catch (err) {
@@ -254,7 +374,7 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
     }
   };
 
-  // 메시지 복사 기능
+  // 메시지 복사 핸들러
   const copyMessageToClipboard = (content: string, messageId: string) => {
     navigator.clipboard.writeText(content).then(
       () => {
@@ -262,208 +382,162 @@ const ChatInterface = ({ conversation, messages }: ChatInterfaceProps) => {
         setTimeout(() => setCopiedMessageId(null), 2000);
       },
       err => {
-        console.error('메시지 복사 실패:', err);
+        console.error('클립보드 복사 중 오류:', err);
       }
     );
   };
 
-  // 애니메이션 변수 정의
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const messageVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  };
-
   return (
-    <div className="bg-background text-foreground flex h-full w-full flex-col">
-      {/* 대화 제목 */}
-      <div className="border-border bg-card border-b p-4 shadow-sm">
-        <h1 className="text-card-foreground text-xl font-semibold">{conversation.title}</h1>
-      </div>
-
-      {/* 메시지 목록 */}
-      <div className="flex-1 overflow-y-auto" ref={chatContainerRef}>
-        <motion.div
-          className="mx-auto w-full max-w-4xl"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
+    <div className="flex h-full flex-col">
+      {/* 채팅 메시지 영역 */}
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 md:p-6">
+        <div className="mx-auto max-w-4xl">
           {localMessages.length === 0 ? (
-            <div className="flex h-full items-center justify-center py-20">
-              <div className="text-muted-foreground text-center">
-                <RiRobot2Fill className="text-muted-foreground/60 mx-auto mb-3 h-16 w-16" />
-                <p className="text-xl font-medium">대화를 시작해보세요</p>
-                <p className="mt-2">법률 관련 질문을 입력하시면 AI가 답변해 드립니다.</p>
+            <div className="flex h-full items-center justify-center">
+              <div className="text-center text-gray-500">
+                <p>대화를 시작하세요.</p>
               </div>
             </div>
           ) : (
-            localMessages.map((message, index) => (
-              <motion.div
-                key={`${message.id}-${index}`}
-                variants={messageVariants}
-                className={cn(
-                  'group border-border w-full border-b',
-                  message.role === 'user' ? 'bg-background' : 'bg-card'
-                )}
-              >
-                <div className="mx-auto flex w-full max-w-4xl p-4 md:px-8 md:py-6">
-                  {/* 아이콘 */}
-                  <div className="mr-4 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full">
+            <div className="space-y-6">
+              {localMessages.map(message => (
+                <div
+                  key={message.id}
+                  className={cn(
+                    'flex items-start gap-4 rounded-lg p-4',
+                    message.role === 'user'
+                      ? 'bg-blue-50 dark:bg-blue-950/30'
+                      : 'bg-gray-50 dark:bg-gray-800/30'
+                  )}
+                >
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
                     {message.role === 'user' ? (
-                      <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full">
-                        <FaUser className="h-4 w-4" />
-                      </div>
+                      <FaUser className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                     ) : (
-                      <div className="bg-chart-1 flex h-8 w-8 items-center justify-center rounded-full text-white">
-                        <RiRobot2Fill className="h-5 w-5" />
-                      </div>
+                      <RiRobot2Fill className="h-5 w-5 text-blue-500 dark:text-blue-400" />
                     )}
                   </div>
-
-                  {/* 메시지 내용 */}
-                  <div className="flex-1 overflow-hidden">
-                    <div className="text-muted-foreground mb-1 text-sm font-medium">
-                      {message.role === 'user' ? '사용자' : '해주세요 AI'}
-                    </div>
-                    <div className="prose prose-invert dark:prose-invert max-w-none">
-                      {message.content ? (
-                        <ReactMarkdown>{message.content}</ReactMarkdown>
-                      ) : message.role === 'assistant' && isSubmitting ? (
-                        <div className="flex items-center space-x-2">
-                          <motion.div
-                            animate={{ opacity: [0.4, 1, 0.4] }}
-                            transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-                            className="bg-muted-foreground/60 h-2 w-2 rounded-full"
+                  <div className="flex-1 space-y-2">
+                    {isMessageLoading(message) ? (
+                      <div
+                        className={cn(
+                          'flex flex-col space-y-2 rounded-md p-3',
+                          message.content.includes('문서') || message.content.includes('생성')
+                            ? 'bg-blue-50 dark:bg-blue-900/20'
+                            : 'bg-gray-50 dark:bg-gray-800/20'
+                        )}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Loading
+                            size={
+                              message.content.includes('문서') || message.content.includes('생성')
+                                ? 50
+                                : 40
+                            }
                           />
-                          <motion.div
-                            animate={{ opacity: [0.4, 1, 0.4] }}
-                            transition={{
-                              repeat: Infinity,
-                              duration: 1.5,
-                              ease: 'easeInOut',
-                              delay: 0.2,
-                            }}
-                            className="bg-muted-foreground/60 h-2 w-2 rounded-full"
-                          />
-                          <motion.div
-                            animate={{ opacity: [0.4, 1, 0.4] }}
-                            transition={{
-                              repeat: Infinity,
-                              duration: 1.5,
-                              ease: 'easeInOut',
-                              delay: 0.4,
-                            }}
-                            className="bg-muted-foreground/60 h-2 w-2 rounded-full"
-                          />
+                          <span
+                            className={cn(
+                              'font-medium',
+                              message.content.includes('문서') || message.content.includes('생성')
+                                ? 'text-blue-600 dark:text-blue-400'
+                                : 'text-gray-600 dark:text-gray-400'
+                            )}
+                          >
+                            {message.content.includes('문서') || message.content.includes('생성')
+                              ? '문서를 생성하고 있습니다'
+                              : 'AI가 응답을 생성하고 있습니다'}
+                          </span>
                         </div>
-                      ) : null}
+                        <div className="ml-12 text-sm text-gray-500 dark:text-gray-400">
+                          {message.content.includes('문서') || message.content.includes('생성')
+                            ? '문서 생성이 완료되면 다운로드 링크가 제공됩니다. 잠시만 기다려주세요...'
+                            : '잠시만 기다려주세요...'}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="prose prose-sm dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 break-words">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          rehypePlugins={[rehypeRaw, rehypeSanitize]}
+                          components={{
+                            a: ({ href, children, ...props }) => (
+                              <a
+                                href={href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500 hover:underline"
+                                {...props}
+                              >
+                                {children}
+                              </a>
+                            ),
+                          }}
+                        >
+                          {message.content}
+                        </ReactMarkdown>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => copyMessageToClipboard(message.content, message.id)}
+                        className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                        disabled={isMessageLoading(message)}
+                      >
+                        {copiedMessageId === message.id ? (
+                          <>
+                            <BiCheck className="h-4 w-4" />
+                            <span>복사됨</span>
+                          </>
+                        ) : (
+                          <>
+                            <MdOutlineContentCopy className="h-4 w-4" />
+                            <span>복사</span>
+                          </>
+                        )}
+                      </button>
                     </div>
-                  </div>
-
-                  {/* 메시지 액션 버튼 */}
-                  <div className="ml-2 flex items-start opacity-0 transition-opacity group-hover:opacity-100">
-                    <button
-                      onClick={() => copyMessageToClipboard(message.content, message.id)}
-                      className="text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded p-1"
-                      aria-label="메시지 복사"
-                      title="메시지 복사"
-                      disabled={!message.content}
-                    >
-                      {copiedMessageId === message.id ? (
-                        <BiCheck className="h-5 w-5 text-green-500" />
-                      ) : (
-                        <MdOutlineContentCopy className="h-5 w-5" />
-                      )}
-                    </button>
-                    <button
-                      className="text-muted-foreground hover:bg-accent hover:text-accent-foreground ml-1 rounded p-1"
-                      aria-label="더 보기"
-                      title="더 보기"
-                    >
-                      <FiMoreHorizontal className="h-5 w-5" />
-                    </button>
                   </div>
                 </div>
-              </motion.div>
-            ))
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
           )}
-          <div ref={messagesEndRef} className="h-4" />
-        </motion.div>
+        </div>
       </div>
 
-      {/* 오류 메시지 */}
-      <AnimatePresence>
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="mx-auto mb-2 w-full max-w-4xl px-4"
-          >
-            <div className="bg-destructive/20 text-destructive-foreground border-destructive/50 rounded-md border p-3 text-sm">
-              <div className="flex">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="text-destructive mr-2 h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+      {/* 입력 영역 */}
+      <div className="border-t bg-white p-4 md:p-6 dark:border-gray-800 dark:bg-gray-950">
+        <div className="mx-auto max-w-4xl">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="relative">
+              <textarea
+                ref={inputRef}
+                value={newMessage}
+                onChange={e => setNewMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="메시지를 입력하세요..."
+                className="min-h-[80px] w-full resize-none rounded-lg border border-gray-300 bg-white p-3 pr-12 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-blue-400 dark:focus:ring-blue-400"
+                disabled={isSubmitting}
+              />
+              <button
+                type="submit"
+                disabled={isSubmitting || !newMessage.trim()}
+                className="absolute right-3 bottom-3 flex h-9 w-9 items-center justify-center rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-600 disabled:bg-gray-300 dark:disabled:bg-gray-700"
+              >
+                {isSubmitting ? (
+                  <FiMoreHorizontal className="h-5 w-5 animate-pulse" />
+                ) : (
+                  <IoSend className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+            {error && (
+              <div className="rounded-md bg-red-50 p-3 text-sm text-red-500 dark:bg-red-900/20 dark:text-red-300">
                 {error}
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* 메시지 입력 폼 */}
-      <div className="border-border bg-card border-t p-4">
-        <form onSubmit={handleSubmit} className="mx-auto max-w-4xl">
-          <div className="border-input bg-background relative rounded-xl border shadow-sm">
-            <textarea
-              ref={inputRef}
-              className="text-foreground placeholder:text-muted-foreground w-full resize-none rounded-xl border-0 bg-transparent py-3 pr-12 pl-4 focus:ring-0 focus:outline-none"
-              placeholder="메시지를 입력하세요..."
-              value={newMessage}
-              onChange={e => setNewMessage(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={isSubmitting}
-              rows={1}
-            />
-            <motion.button
-              type="submit"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              disabled={isSubmitting || !newMessage.trim()}
-              className={cn(
-                'bg-chart-1 absolute right-2 bottom-2 rounded-lg p-2 text-white transition-colors',
-                isSubmitting || !newMessage.trim()
-                  ? 'cursor-not-allowed opacity-50'
-                  : 'hover:bg-chart-1/90'
-              )}
-            >
-              <IoSend className="h-5 w-5" />
-            </motion.button>
-          </div>
-          <p className="text-muted-foreground mt-2 text-center text-xs">
-            Enter 키를 눌러 전송하거나 Shift+Enter로 줄바꿈을 할 수 있습니다.
-          </p>
-        </form>
+            )}
+          </form>
+        </div>
       </div>
     </div>
   );

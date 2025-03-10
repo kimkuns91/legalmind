@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>위임장</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 40px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .content {
+        margin-bottom: 30px;
+      }
+
+      .signature {
+        margin-top: 50px;
+      }
+
+      .signature-line {
+        border-top: 1px solid #000;
+        width: 200px;
+        margin-top: 10px;
+        margin-bottom: 5px;
+      }
+
+      .date {
+        margin-top: 30px;
+        text-align: right;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>위 임 장</h1>
+    </div>
+
+    <div class="content">
+      <h3>위임인 (Principal)</h3>
+      <p>성명: <strong>{{ principal_name }}</strong></p>
+      <p>주민등록번호: <strong>{{ principal_id_number }}</strong></p>
+      <p>주소: <strong>{{ principal_address }}</strong></p>
+      <p>연락처: <strong>{{ principal_phone }}</strong></p>
+
+      <h3>수임인 (Agent)</h3>
+      <p>성명: <strong>{{ agent_name }}</strong></p>
+      <p>주민등록번호: <strong>{{ agent_id_number }}</strong></p>
+      <p>주소: <strong>{{ agent_address }}</strong></p>
+      <p>연락처: <strong>{{ agent_phone }}</strong></p>
+
+      <h3>위임 사항 (Scope of Authority)</h3>
+      <p>본인은 위 수임인에게 아래의 권한을 위임합니다:</p>
+      <p><strong>{{ scope_of_authority }}</strong></p>
+
+      <h3>위임 기간 (Duration)</h3>
+      <p>위임 기간: <strong>{{ start_date }}</strong>부터 <strong>{{ end_date }}</strong>까지</p>
+
+      <h3>기타 사항 (Additional Terms)</h3>
+      <p>{{ additional_terms }}</p>
+    </div>
+
+    <div class="content">
+      <p>
+        본인은 상기 수임인에게 위와 같은 사항을 위임하며, 수임인이 위임 범위 내에서 행한 행위에 대해
+        법적 효력이 있음을 인정합니다.
+      </p>
+    </div>
+
+    <div class="date">
+      <p>작성일: <strong>{{ execution_date }}</strong></p>
+    </div>
+
+    <div class="signature">
+      <p>위임인 서명:</p>
+      <div class="signature-line"></div>
+      <p><strong>{{ principal_name }}</strong> (인)</p>
+    </div>
+  </body>
+</html>

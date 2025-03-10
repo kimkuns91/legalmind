@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>임대차 계약서</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 40px;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+      }
+
+      .signature {
+        margin-top: 30px;
+        text-align: center;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>임대차 계약서</h1>
+
+    <p>임대인(갑): <strong>{{ landlord_name }}</strong></p>
+    <p>임차인(을): <strong>{{ tenant_name }}</strong></p>
+    <p>소재지: <strong>{{ address }}</strong></p>
+    <p>보증금: <strong>{{ deposit }} 원</strong></p>
+    <p>월세: <strong>{{ rent }} 원</strong></p>
+    <p>계약기간: <strong>{{ lease_start_date }} ~ {{ lease_end_date }}</strong></p>
+
+    <h2>제1조 (목적)</h2>
+    <p>
+      임대인(갑)은 위의 부동산을 임차인(을)에게 임대하며, 임차인(을)은 이를 임차하여 사용하기로
+      한다.
+    </p>
+
+    <h2>제2조 (보증금 및 차임)</h2>
+    <p>보증금은 계약 체결 시 임대인(갑)에게 지급하며, 월세는 매월 1일에 송금한다.</p>
+
+    <h2>제3조 (계약의 갱신 및 해지)</h2>
+    <p>
+      계약기간 만료 1개월 전까지 당사자 간 별도의 의사 표시가 없으면 동일 조건으로 1년씩 자동
+      연장된다.
+    </p>
+
+    <h2>제4조 (기타 사항)</h2>
+    <p>
+      임차인은 임차한 부동산을 임의로 개조하거나 전대할 수 없다. 본 계약서에 명시되지 않은 사항은
+      민법 및 주택임대차보호법을 따른다.
+    </p>
+
+    <div class="signature">
+      <p><strong>임대인(갑) 서명: ___________________</strong></p>
+      <p><strong>임차인(을) 서명: ___________________</strong></p>
+      <p>계약일: <strong>{{ contract_date }}</strong></p>
+    </div>
+  </body>
+</html>

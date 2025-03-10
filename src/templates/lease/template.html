@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>임대차 계약서</title>
+    <style>
+      body {
+        font-family: 'Noto Sans KR', sans-serif;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        border: 1px solid #ddd;
+        padding: 40px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 24px;
+      }
+      .section {
+        margin-bottom: 20px;
+      }
+      .section-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 18px;
+      }
+      .party-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+      }
+      .party {
+        width: 48%;
+      }
+      .party-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 5px;
+      }
+      .info-row {
+        margin-bottom: 10px;
+        display: flex;
+      }
+      .info-label {
+        width: 80px;
+        font-weight: bold;
+      }
+      .info-value {
+        flex: 1;
+      }
+      .terms {
+        margin-bottom: 30px;
+      }
+      .term-item {
+        margin-bottom: 15px;
+      }
+      .signatures {
+        margin-top: 50px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .signature {
+        width: 45%;
+        text-align: center;
+      }
+      .signature-line {
+        border-top: 1px solid #000;
+        margin-top: 40px;
+        padding-top: 10px;
+      }
+      .date {
+        text-align: center;
+        margin: 40px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>부동산 임대차 계약서</h1>
+
+      <div class="party-info">
+        <div class="party">
+          <div class="party-title">임대인</div>
+          <div class="info-row">
+            <div class="info-label">성명</div>
+            <div class="info-value">{{landlord_name}}</div>
+          </div>
+          {{#if landlord_address}}
+          <div class="info-row">
+            <div class="info-label">주소</div>
+            <div class="info-value">{{landlord_address}}</div>
+          </div>
+          {{/if}} {{#if landlord_contact}}
+          <div class="info-row">
+            <div class="info-label">연락처</div>
+            <div class="info-value">{{landlord_contact}}</div>
+          </div>
+          {{/if}}
+        </div>
+
+        <div class="party">
+          <div class="party-title">임차인</div>
+          <div class="info-row">
+            <div class="info-label">성명</div>
+            <div class="info-value">{{tenant_name}}</div>
+          </div>
+          {{#if tenant_address}}
+          <div class="info-row">
+            <div class="info-label">주소</div>
+            <div class="info-value">{{tenant_address}}</div>
+          </div>
+          {{/if}} {{#if tenant_contact}}
+          <div class="info-row">
+            <div class="info-label">연락처</div>
+            <div class="info-value">{{tenant_contact}}</div>
+          </div>
+          {{/if}}
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">1. 임대물건</div>
+        <div class="info-row">
+          <div class="info-label">소재지</div>
+          <div class="info-value">{{property_address}}</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">2. 계약내용</div>
+        <div class="info-row">
+          <div class="info-label">보증금</div>
+          <div class="info-value">{{deposit}}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">월 임대료</div>
+          <div class="info-value">{{monthly_rent}}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">계약기간</div>
+          <div class="info-value">{{lease_period}}</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">3. 계약조건</div>
+        <div class="terms">
+          <div class="term-item">
+            ① 임차인은 임대인에게 계약 체결 시 보증금을 지불하고, 매월 약정한 임대료를 지불한다.
+          </div>
+          <div class="term-item">
+            ② 임대차 기간 중 임차인의 귀책사유로 인한 수리비는 임차인이 부담한다.
+          </div>
+          <div class="term-item">
+            ③ 임차인은 임대인의 동의 없이 임대물건을 전대하거나 용도를 변경할 수 없다.
+          </div>
+          <div class="term-item">④ 계약기간 만료 시 임차인은 임대물건을 원상복구하여 반환한다.</div>
+          <div class="term-item">
+            ⑤ 임대차 계약이 종료되면 임대인은 임차인에게 보증금을 반환한다.
+          </div>
+        </div>
+      </div>
+
+      {{#if special_terms}}
+      <div class="section">
+        <div class="section-title">4. 특약사항</div>
+        <div class="terms">
+          <div class="term-item">{{special_terms}}</div>
+        </div>
+      </div>
+      {{/if}}
+
+      <div class="date">계약일: {{contract_date}}</div>
+
+      <div class="signatures">
+        <div class="signature">
+          <div>임대인: {{landlord_name}}</div>
+          <div class="signature-line">(서명 또는 인)</div>
+        </div>
+        <div class="signature">
+          <div>임차인: {{tenant_name}}</div>
+          <div class="signature-line">(서명 또는 인)</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

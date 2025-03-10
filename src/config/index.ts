@@ -1,3 +1,10 @@
+/**
+ * 환경 변수 설정
+ *
+ * 애플리케이션에서 사용하는 환경 변수들을 중앙에서 관리합니다.
+ * process.env에서 값을 가져오며, 필요한 경우 기본값을 설정합니다.
+ */
+
 // 인증 관련 환경 변수
 export const NEXTAUTH_SECRET = process.env.NEXTAUTH_SECRET; // NextAuth 암호화 키
 export const NEXTAUTH_URL = process.env.NEXTAUTH_URL; // NextAuth URL
@@ -18,7 +25,19 @@ export const ADMIN_EMAIL = process.env.ADMIN_EMAIL; // 관리자 이메일
 export const OPENAI_API_KEY = process.env.OPENAI_API_KEY; // OpenAI API 키
 
 // AWS S3 관련 환경 변수
-export const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID; // AWS 액세스 키 ID
-export const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY; // AWS 비밀 액세스 키
-export const AWS_REGION = process.env.AWS_REGION; // AWS 리전 (ap-northeast-2: 서울)
-export const AWS_BUCKET_NAME = process.env.AWS_BUCKET_NAME; // S3 버킷 이름
+export const AWS_REGION = process.env.AWS_REGION || 'ap-northeast-2';
+export const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID || '';
+export const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY || '';
+export const AWS_BUCKET_NAME = process.env.AWS_BUCKET_NAME || 'legalmind-documents';
+
+// 문서 템플릿 관련 설정
+export const TEMPLATE_PATH = 'templates';
+export const GENERATED_DOCS_PATH = 'generated';
+export const ASSETS_PATH = 'assets';
+
+// 문서 URL 관련 설정
+export const DOCUMENT_URL_EXPIRATION = 86400; // 24시간 (초 단위)
+
+// 기타 설정
+export const APP_NAME = 'LegalMind';
+export const DEFAULT_LOCALE = 'ko';

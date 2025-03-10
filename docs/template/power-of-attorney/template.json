@@ -1,0 +1,135 @@
+{
+  "id": "power-of-attorney",
+  "name": "위임장",
+  "version": "1.0",
+  "description": "법적 권한을 타인에게 위임하기 위한 표준 위임장",
+  "requiredFields": [
+    {
+      "id": "principal_name",
+      "name": "위임인 성명",
+      "type": "text",
+      "required": true,
+      "description": "위임인(본인)의 성명을 입력하세요."
+    },
+    {
+      "id": "principal_id_number",
+      "name": "위임인 주민등록번호",
+      "type": "text",
+      "required": true,
+      "description": "위임인의 주민등록번호를 입력하세요."
+    },
+    {
+      "id": "principal_address",
+      "name": "위임인 주소",
+      "type": "text",
+      "required": true,
+      "description": "위임인의 주소를 입력하세요."
+    },
+    {
+      "id": "principal_phone",
+      "name": "위임인 연락처",
+      "type": "text",
+      "required": true,
+      "description": "위임인의 연락처를 입력하세요."
+    },
+    {
+      "id": "agent_name",
+      "name": "수임인 성명",
+      "type": "text",
+      "required": true,
+      "description": "수임인(대리인)의 성명을 입력하세요."
+    },
+    {
+      "id": "agent_id_number",
+      "name": "수임인 주민등록번호",
+      "type": "text",
+      "required": true,
+      "description": "수임인의 주민등록번호를 입력하세요."
+    },
+    {
+      "id": "agent_address",
+      "name": "수임인 주소",
+      "type": "text",
+      "required": true,
+      "description": "수임인의 주소를 입력하세요."
+    },
+    {
+      "id": "agent_phone",
+      "name": "수임인 연락처",
+      "type": "text",
+      "required": true,
+      "description": "수임인의 연락처를 입력하세요."
+    },
+    {
+      "id": "scope_of_authority",
+      "name": "위임 사항",
+      "type": "textarea",
+      "required": true,
+      "description": "위임하는 권한의 범위와 내용을 상세히 입력하세요."
+    },
+    {
+      "id": "start_date",
+      "name": "위임 시작일",
+      "type": "date",
+      "required": true,
+      "description": "위임 기간의 시작일을 입력하세요."
+    },
+    {
+      "id": "end_date",
+      "name": "위임 종료일",
+      "type": "date",
+      "required": true,
+      "description": "위임 기간의 종료일을 입력하세요."
+    },
+    {
+      "id": "additional_terms",
+      "name": "기타 사항",
+      "type": "textarea",
+      "required": false,
+      "description": "추가적인 위임 조건이나 제한 사항이 있다면 입력하세요."
+    },
+    {
+      "id": "execution_date",
+      "name": "작성일",
+      "type": "date",
+      "required": true,
+      "description": "위임장 작성일을 입력하세요."
+    }
+  ],
+  "sections": [
+    {
+      "title": "위임인 정보",
+      "content": "성명: {{principal_name}}\n주민등록번호: {{principal_id_number}}\n주소: {{principal_address}}\n연락처: {{principal_phone}}"
+    },
+    {
+      "title": "수임인 정보",
+      "content": "성명: {{agent_name}}\n주민등록번호: {{agent_id_number}}\n주소: {{agent_address}}\n연락처: {{agent_phone}}"
+    },
+    {
+      "title": "위임 사항",
+      "content": "{{scope_of_authority}}"
+    },
+    {
+      "title": "위임 기간",
+      "content": "{{start_date}}부터 {{end_date}}까지"
+    },
+    {
+      "title": "기타 사항",
+      "content": "{{additional_terms}}"
+    },
+    {
+      "title": "법적 효력",
+      "content": "본인은 상기 수임인에게 위와 같은 사항을 위임하며, 수임인이 위임 범위 내에서 행한 행위에 대해 법적 효력이 있음을 인정합니다."
+    },
+    {
+      "title": "서명",
+      "content": "위임인: {{principal_name}} (인)\n작성일: {{execution_date}}"
+    }
+  ],
+  "templateFile": "template.html",
+  "outputFormat": "pdf",
+  "metadata": {
+    "category": "법률문서",
+    "tags": ["위임장", "법적권한", "대리권"]
+  }
+}

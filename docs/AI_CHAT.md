@@ -1,424 +1,151 @@
-# 해주세요 AI 채팅 기능 명세서
+# 해주세요 AI 채팅 프로세스 흐름도
 
-## 개요
+## 채팅 프로세스 단계
 
-해주세요 AI 채팅 기능은 사용자의 법률 관련 질문에 답변하고, 필요한 법률 서류를 자동으로 생성해주는 서비스입니다. 최신 버전의 `@ai-sdk/openai`를 활용하여 자연어 처리 및 문서 생성 기능을 구현합니다. Next.js의 Server Actions를 활용하여 서버-클라이언트 간 통신을 효율적으로 처리합니다.
+### 1. 사용자 질문 입력 및 전송
 
-## 기술 스택
+- 사용자가 채팅 인터페이스(`ChatInterface.tsx`)에서 질문 입력
+- `handleSubmit` 함수를 통해 질문 전송
+- `sendMessage` Server Action 호출
 
-- **AI 모델**: OpenAI GPT-4
-- **프레임워크**: Next.js (App Router)
-- **AI SDK**: @ai-sdk/openai (최신 버전), ai 패키지
-- **서버 통신**: Next.js Server Actions
-- **문서 생성**: PDF/Word 파일 생성 라이브러리
-- **데이터 저장**: Prisma ORM을 통한 데이터베이스 연동
-- **타입 검증**: Zod
+### 2. 메시지 저장 및 처리 시작
 
-## 서비스 플로우
+- `sendMessage` 함수에서 사용자 인증 확인
+- 사용자 메시지를 DB에 저장
+- AI 응답 생성 프로세스 시작 (`generateAiResponse` 호출)
 
-### 1️⃣ 유저 질문 입력
+### 3. 문서 요청 여부 판단
 
-- 유저가 AI 챗봇에 질문 입력 (법률 상담 또는 서류 작성 요청)
-- 질문 내용은 데이터베이스에 저장되어 대화 히스토리 관리
-- Server Actions를 통해 메시지 저장 및 AI 응답 생성 프로세스 시작
+- `detectDocumentRequest` 함수를 통해 사용자 메시지가 문서 생성 요청인지 판단
+- 문서 요청이 아닌 경우: 일반 법률 질문으로 처리
+- 문서 요청인 경우: 문서 유형 식별 및 필요 정보 확인 단계로 진행
 
-### 2️⃣ AI가 질문 유형 분류
+### 4-A. 일반 법률 질문 처리 (문서 요청이 아닌 경우)
 
-- 단순 법률 질문인지 서류 작성 요청인지 판단
-- 자연어 처리(NLP) 모델을 이용해 질문을 분류
-- 예시:
-  - "임대차 계약서에서 보증금 반환 조항은 어떻게 설정하나요?" → 단순 질문
-  - "임대차 계약서를 작성해줘." → 서류 작성 요청
+- OpenAI API를 통해 법률 질문에 대한 응답 생성
+- `streamText`를 사용하여 응답을 실시간으로 스트리밍
+- 응답 내용을 DB에 저장
 
-### 3️⃣ 단순 법률 질문 처리
+### 4-B. 문서 요청 처리 (문서 요청인 경우)
 
-- 법률 관련 Q&A 데이터 기반으로 답변 생성
-- 필요시 참고할 법률 조항 제공
-- 답변은 마크다운 형식으로 제공하여 가독성 향상
-- Server Actions를 통해 AI 응답을 스트리밍 방식으로 클라이언트에 전달
+- **문서 유형 식별**:
 
-### 4️⃣ 서류 작성 요청 처리
+  - 문서 유형이 식별되지 않은 경우: 사용자에게 문서 유형 선택 요청
+  - 문서 유형이 식별된 경우: 필요 정보 확인 단계로 진행
 
-#### 서류 템플릿 분석
+- **필요 정보 확인**:
 
-- 기존 서류 템플릿을 읽고 유저 질문에 맞는 변수를 채움
-- 서류 템플릿은 JSON/YAML 기반으로 관리 (예: 계약서, 합의서, 위임장 등)
-- Server Actions를 통해 템플릿 데이터 접근 및 처리
+  - `extractDocumentParameters` 함수를 통해 필요한 정보 추출
+  - 정보가 부족한 경우: 사용자에게 추가 정보 요청
+  - 정보가 충분한 경우: 문서 생성 단계로 진행
 
-#### 질문을 분석해 필요한 정보 요청
+- **문서 생성 요청**:
+  - `requestDocument` 함수를 통해 문서 생성 요청
+  - 문서 생성 상태를 주기적으로 확인 (`checkStatus` 함수)
+  - 생성 완료 시 다운로드 링크 제공
 
-- "임대차 계약서를 작성해줘"라고 하면,
-  → "임대인/임차인 이름, 보증금, 월세, 계약 기간을 입력해주세요."
-- 추가 정보가 필요하면 유저에게 다시 질문
-- Server Actions를 통해 필요한 정보 요청 및 응답 처리
+### 5. 추가 정보 제공 처리
 
-#### 서류 자동 생성
+- 사용자가 추가 정보 제공 시 `provideDocumentInfo` 함수 호출
+- 제공된 정보를 기존 파라미터와 병합
+- 문서 생성 프로세스 시작
 
-- 유저가 입력한 정보를 바탕으로 PDF 또는 Word 파일 생성
-- OpenAI Function Calling을 이용해 AI가 적절한 문장을 자동 완성
-- 예시: "계약 기간: 2024년 3월 1일 ~ 2025년 2월 28일" 자동 삽입
-- Server Actions를 통해 문서 생성 프로세스 실행 및 상태 관리
+### 6. 문서 생성 프로세스
 
-#### 완성된 서류 제공
+- `processDocumentGeneration` 함수에서 비동기적으로 문서 생성
+- 템플릿 조회 및 파라미터 매핑 (`getDocumentTemplate`, `fillDocumentTemplate`)
+- PDF 생성 (`generatePdfFromHtml`)
+- S3에 파일 업로드 및 URL 생성
+- 문서 상태 업데이트 (`updateDocumentStatus`)
 
-- 최종 계약서 파일을 다운로드 가능하도록 제공 (PDF, Word)
-- Server Actions를 통해 생성된 파일 URL 반환
+### 7. 응답 표시 및 다운로드 링크 제공
 
-## 데이터 모델
+- 생성된 응답 또는 문서 링크를 채팅 인터페이스에 표시
+- 문서 생성 완료 시 다운로드 링크 제공
+- 로딩 상태 관리 (`isMessageLoading` 함수)
 
-### 대화(Conversation)
+## 주요 함수 요약
 
-```typescript
-interface IConversation {
-  id: string;
-  title: string;
-  createdAt: Date;
-  updatedAt: Date;
-  userId: string;
-  messages: IMessage[];
-  documentRequests?: IDocumentRequest[];
-}
+- **사용자 인터페이스**: `ChatInterface`, `handleSubmit`, `isMessageLoading`
+- **메시지 처리**: `sendMessage`, `generateAiResponse`
+- **문서 요청 감지**: `detectDocumentRequest`, `extractDocumentParameters`
+- **파라미터 추출**: `extractParametersWithRegex`, `extractParametersWithAI`
+- **문서 생성**: `requestDocument`, `processDocumentGeneration`, `generatePdfFromHtml`
+- **추가 정보 처리**: `provideDocumentInfo`
+- **상태 관리**: `updateDocumentStatus`, `getDocumentStatus`, `checkStatus`
+
+## 프로젝트 구조 개선 (리팩토링)
+
+### 기존 구조의 문제점
+
+- `chat.ts` 파일이 너무 길어져서 코드 관리와 유지보수가 어려움
+- 여러 기능이 한 파일에 혼합되어 있어 가독성이 떨어짐
+- 순환 참조 문제 발생 가능성이 높음
+- 협업 시 충돌 가능성이 높음
+
+### 개선된 폴더 구조
+
+```
+src/actions/
+├── chat/
+│   ├── index.ts           # 주요 함수들을 내보내는 진입점
+│   ├── chat.ts            # 기본 채팅 기능 (메시지 전송, AI 응답 생성 등)
+│   ├── document-detection.ts  # 문서 요청 감지 관련 기능
+│   ├── case-lookup.ts     # 판례 찾기 관련 기능
+│   ├── parameter-extraction.ts # 파라미터 추출 관련 기능
+│   ├── types.ts           # 채팅 관련 타입 정의
+│   └── utils.ts           # 유틸리티 함수 (스트림 처리 등)
+└── document/
+    ├── index.ts           # 문서 관련 함수 내보내기
+    └── document.ts        # 문서 생성 기능
 ```
 
-### 메시지(Message)
+### 파일별 주요 기능
 
-```typescript
-interface IMessage {
-  id: string;
-  content: string;
-  role: string; // 'user' | 'assistant'
-  createdAt: Date;
-  userId: string;
-  conversationId: string;
-}
-```
+#### `chat/index.ts`
 
-### 문서 요청(DocumentRequest)
+- 모든 채팅 관련 함수를 내보내는 진입점
+- 다른 모듈에서 채팅 기능을 사용할 때 이 파일을 통해 접근
 
-```typescript
-interface IDocumentRequest {
-  id: string;
-  documentType: string; // 'lease', 'agreement', 'power_of_attorney', etc.
-  status: string; // 'pending', 'processing', 'completed', 'failed'
-  parameters: Record<string, any>; // 문서 생성에 필요한 파라미터
-  fileUrl?: string; // 생성된 문서 URL
-  conversationId: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
+#### `chat/chat.ts`
 
-## Server Actions 구현
+- 메시지 전송 (`sendMessage`)
+- AI 응답 생성 (`generateAiResponse`)
+- 대화 목록 조회 (`getConversations`)
+- 대화 및 메시지 조회 (`getConversationWithMessages`)
+- 추가 정보 제공 (`provideDocumentInfo`)
 
-### 채팅 관련 Server Actions
+#### `chat/document-detection.ts`
 
-```typescript
-// src/actions/chat.ts
-'use server';
+- 문서 요청 감지 (`detectDocumentRequest`)
+- 문서 파라미터 추출 (`extractDocumentParameters`)
 
-import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
-import { OpenAI } from '@ai-sdk/openai';
-import { streamText } from 'ai';
+#### `chat/case-lookup.ts`
 
-// 메시지 전송 및 AI 응답 생성 Server Action
-export async function sendMessage(conversationId: string, message: string) {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error('인증되지 않은 사용자입니다.');
+- 판례 찾기 응답 생성 (`generateCaseLookupResponse`)
 
-  const userId = session.user.id;
+#### `chat/parameter-extraction.ts`
 
-  // 사용자 메시지 저장
-  await prisma.message.create({
-    data: {
-      content: message,
-      role: 'user',
-      conversationId,
-      userId,
-    },
-  });
+- 정규식을 사용한 파라미터 추출 (`extractParametersWithRegex`)
+- AI를 사용한 파라미터 추출 (`extractParametersWithAI`)
+- 파라미터 완전성 확인 (`isParameterSetComplete`)
+- 주민등록번호 추출 (`extractIdNumber`)
 
-  // AI 응답 스트리밍
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY!,
-  });
+#### `chat/types.ts`
 
-  const stream = await streamText({
-    model: openai.chat({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'system',
-          content:
-            '당신은 법률 전문가입니다. 사용자의 법률 관련 질문에 정확하고 도움이 되는 답변을 제공하세요.',
-        },
-        { role: 'user', content: message },
-      ],
-    }),
-  });
+- 채팅 메시지 인터페이스 (`ChatMessage`)
+- 문서 요청 감지 결과 인터페이스 (`DocumentRequestDetection`)
 
-  // 응답 저장 및 경로 재검증
-  const aiResponse = await stream.text();
-  await prisma.message.create({
-    data: {
-      content: aiResponse,
-      role: 'assistant',
-      conversationId,
-      userId,
-    },
-  });
+#### `chat/utils.ts`
 
-  revalidatePath(`/ai/${conversationId}`);
-  return { stream };
-}
+- 스트림 안전 종료 (`safelyCloseStream`)
+- 스트림 오류 전달 (`safelyErrorStream`)
 
-// 대화 목록 조회 Server Action
-export async function getConversations() {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error('인증되지 않은 사용자입니다.');
+### 리팩토링 장점
 
-  return prisma.conversation.findMany({
-    where: { userId: session.user.id },
-    orderBy: { updatedAt: 'desc' },
-    include: {
-      messages: {
-        take: 1,
-        orderBy: { createdAt: 'desc' },
-      },
-    },
-  });
-}
-
-// 특정 대화 조회 Server Action
-export async function getConversation(conversationId: string) {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error('인증되지 않은 사용자입니다.');
-
-  return prisma.conversation.findUnique({
-    where: {
-      id: conversationId,
-      userId: session.user.id,
-    },
-    include: {
-      messages: {
-        orderBy: { createdAt: 'asc' },
-      },
-    },
-  });
-}
-```
-
-### 문서 생성 관련 Server Actions
-
-```typescript
-// src/actions/document.ts
-'use server';
-
-import { auth } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
-import { OpenAI } from '@ai-sdk/openai';
-
-// 문서 생성 요청 Server Action
-export async function requestDocument(
-  conversationId: string,
-  documentType: string,
-  parameters: Record<string, any>
-) {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error('인증되지 않은 사용자입니다.');
-
-  const userId = session.user.id;
-
-  // 문서 요청 생성
-  const documentRequest = await prisma.documentRequest.create({
-    data: {
-      documentType,
-      status: 'pending',
-      parameters,
-      conversationId,
-      userId,
-    },
-  });
-
-  // 비동기 문서 생성 프로세스 시작 (실제 구현은 별도 작업)
-  processDocumentGeneration(documentRequest.id);
-
-  revalidatePath(`/ai/${conversationId}`);
-  return documentRequest;
-}
-
-// 문서 생성 프로세스 (비동기 처리)
-async function processDocumentGeneration(documentRequestId: string) {
-  try {
-    // 상태 업데이트: 처리 중
-    await prisma.documentRequest.update({
-      where: { id: documentRequestId },
-      data: { status: 'processing' },
-    });
-
-    const documentRequest = await prisma.documentRequest.findUnique({
-      where: { id: documentRequestId },
-    });
-
-    if (!documentRequest) throw new Error('문서 요청을 찾을 수 없습니다.');
-
-    // 문서 생성 로직 (실제 구현은 별도 작업)
-    // ...
-
-    // 생성된 문서 URL 저장
-    const fileUrl = '생성된_문서_URL';
-
-    // 상태 업데이트: 완료
-    await prisma.documentRequest.update({
-      where: { id: documentRequestId },
-      data: {
-        status: 'completed',
-        fileUrl,
-      },
-    });
-
-    revalidatePath(`/ai/${documentRequest.conversationId}`);
-  } catch (error) {
-    console.error('문서 생성 중 오류 발생:', error);
-
-    // 상태 업데이트: 실패
-    await prisma.documentRequest.update({
-      where: { id: documentRequestId },
-      data: { status: 'failed' },
-    });
-  }
-}
-```
-
-## 구현 계획
-
-### 1단계: 기본 채팅 인터페이스 구현
-
-- 채팅 UI 컴포넌트 개발
-- Server Actions를 통한 메시지 전송 및 표시 기능 구현
-- 대화 히스토리 저장 및 불러오기
-
-### 2단계: AI 연동 및 질문 분류 기능
-
-- @ai-sdk/openai 및 Server Actions 연동
-- 질문 유형 분류 로직 구현
-- 단순 법률 질문에 대한 답변 생성 기능
-
-### 3단계: 서류 생성 기능 구현
-
-- 서류 템플릿 시스템 개발
-- Server Actions를 통한 필요 정보 수집 대화 흐름 구현
-- PDF/Word 문서 생성 기능 개발
-
-### 4단계: 사용자 경험 개선
-
-- 로딩 상태 및 에러 처리
-- 응답 속도 최적화
-- 모바일 환경 대응
-
-## 기술적 고려사항
-
-### 보안
-
-- 사용자 데이터 암호화
-- API 키 보안 관리 (환경 변수 사용)
-- 권한 관리 및 인증 (Server Actions 내 인증 검증)
-
-### 성능
-
-- 대화 내용 캐싱
-- Server Actions 최적화
-- 문서 생성 비동기 처리
-
-### 확장성
-
-- 다양한 AI 모델 지원 가능한 구조
-- 새로운 문서 템플릿 쉽게 추가 가능
-- 다국어 지원 준비
-
-## 클라이언트 컴포넌트 구현
-
-### 채팅 인터페이스 컴포넌트
-
-```tsx
-// src/components/ai/ChatInterface.tsx
-'use client';
-
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { sendMessage } from '@/actions/chat';
-import { IMessage, IConversation } from '@/interface';
-
-interface ChatInterfaceProps {
-  conversation: IConversation;
-  messages: IMessage[];
-}
-
-export default function ChatInterface({ conversation, messages }: ChatInterfaceProps) {
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
-
-    setIsLoading(true);
-    try {
-      await sendMessage(conversation.id, input.trim());
-      setInput('');
-      router.refresh();
-    } catch (error) {
-      console.error('메시지 전송 중 오류 발생:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div className="flex h-full flex-col">
-      {/* 메시지 목록 */}
-      <div className="flex-1 overflow-y-auto p-4">
-        {messages.map(message => (
-          <div
-            key={message.id}
-            className={`mb-4 ${message.role === 'user' ? 'ml-auto' : 'mr-auto'}`}
-          >
-            {/* 메시지 내용 */}
-          </div>
-        ))}
-      </div>
-
-      {/* 입력 폼 */}
-      <form onSubmit={handleSubmit} className="border-t p-4">
-        <div className="flex items-center">
-          <input
-            type="text"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            placeholder="메시지를 입력하세요..."
-            className="flex-1 rounded-l-md border p-2"
-            disabled={isLoading}
-          />
-          <button
-            type="submit"
-            className="rounded-r-md bg-blue-500 px-4 py-2 text-white"
-            disabled={isLoading}
-          >
-            전송
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
-```
-
-## 테스트 계획
-
-- 단위 테스트: 각 Server Action 및 컴포넌트 테스트
-- 통합 테스트: Server Actions와 클라이언트 컴포넌트 간 상호작용 테스트
-- E2E 테스트: 사용자 시나리오 기반 테스트
+1. **코드 가독성 향상**: 각 파일이 특정 기능에 집중하므로 코드를 이해하기 쉬워짐
+2. **유지보수 용이성**: 특정 기능을 수정할 때 관련 파일만 수정하면 됨
+3. **협업 효율성**: 여러 개발자가 동시에 작업할 때 충돌 가능성이 줄어듦
+4. **테스트 용이성**: 각 기능별로 테스트를 작성하기 쉬워짐
+5. **확장성**: 새로운 기능을 추가할 때 기존 코드를 수정하지 않고 새 파일을 추가할 수 있음
+6. **순환 참조 방지**: 모듈 간 의존성이 명확해져 순환 참조 문제를 방지할 수 있음

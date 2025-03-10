@@ -1,0 +1,23 @@
+{
+  "templates": [
+    {
+      "type": "lease",
+      "path": "templates/lease",
+      "description": "부동산 임대차 계약서 템플릿",
+      "version": "1.0.0"
+    },
+    {
+      "type": "agreement",
+      "path": "templates/agreement",
+      "description": "일반 합의서 템플릿",
+      "version": "1.0.0"
+    },
+    {
+      "type": "power-of-attorney",
+      "path": "templates/power-of-attorney",
+      "description": "위임장 템플릿",
+      "version": "1.0.0"
+    }
+  ],
+  "lastUpdated": "2023-11-01T00:00:00Z"
+}

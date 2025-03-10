@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>합의서</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 40px;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      h2 {
+        margin-top: 25px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 5px;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .content {
+        margin-bottom: 30px;
+      }
+
+      .signature {
+        margin-top: 50px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .signature-box {
+        width: 45%;
+      }
+
+      .signature-line {
+        border-top: 1px solid #000;
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 5px;
+      }
+
+      .date {
+        margin-top: 30px;
+        text-align: right;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <h1>합 의 서</h1>
+    </div>
+
+    <div class="content">
+      <h3>당사자 정보</h3>
+      <p>갑: <strong>{{ party_a_name }}</strong> (이하 "갑"이라 함)</p>
+      <p>주소: <strong>{{ party_a_address }}</strong></p>
+      <p>연락처: <strong>{{ party_a_phone }}</strong></p>
+      <p>을: <strong>{{ party_b_name }}</strong> (이하 "을"이라 함)</p>
+      <p>주소: <strong>{{ party_b_address }}</strong></p>
+      <p>연락처: <strong>{{ party_b_phone }}</strong></p>
+    </div>
+
+    <div class="content">
+      <h2>제1조 (목적)</h2>
+      <p>
+        본 합의서는 갑과 을 사이에 발생한 <strong>{{ dispute_subject }}</strong>에 관한 분쟁을
+        원만히 해결하기 위하여 작성한다.
+      </p>
+
+      <h2>제2조 (합의 내용)</h2>
+      <p><strong>{{ agreement_content }}</strong></p>
+
+      <h2>제3조 (이행 기한)</h2>
+      <p>
+        본 합의서에 따른 의무는 <strong>{{ performance_deadline }}</strong>까지 이행하여야 한다.
+      </p>
+
+      <h2>제4조 (합의금)</h2>
+      <p>갑은 을에게 합의금으로 <strong>{{ settlement_amount }}</strong>원을 지급하기로 한다.</p>
+      <p>지급 방법: <strong>{{ payment_method }}</strong></p>
+      <p>지급 일자: <strong>{{ payment_date }}</strong></p>
+
+      <h2>제5조 (기타 사항)</h2>
+      <p><strong>{{ additional_terms }}</strong></p>
+
+      <h2>제6조 (완전 합의)</h2>
+      <p>
+        본 합의서는 당사자 간의 완전한 합의를 구성하며, 본 합의서에 명시되지 않은 어떠한 구두 또는
+        서면상의 약속이나 양해도 당사자들을 구속하지 아니한다.
+      </p>
+    </div>
+
+    <div class="date">
+      <p>작성일: <strong>{{ execution_date }}</strong></p>
+    </div>
+
+    <div class="signature">
+      <div class="signature-box">
+        <p>갑:</p>
+        <div class="signature-line"></div>
+        <p><strong>{{ party_a_name }}</strong> (인)</p>
+      </div>
+      <div class="signature-box">
+        <p>을:</p>
+        <div class="signature-line"></div>
+        <p><strong>{{ party_b_name }}</strong> (인)</p>
+      </div>
+    </div>
+  </body>
+</html>
