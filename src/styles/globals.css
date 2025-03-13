@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @plugin "tailwindcss-animate";
 
@@ -47,111 +47,113 @@
 
 :root {
   /* 기본 색상 (라이트 모드) */
-  --background: oklch(1 0 0);                /* 배경색: 흰색 */
-  --foreground: oklch(0.141 0.005 285.823);  /* 전경색(텍스트): 검은색 */
-  
+  --background: #fafafa;
+  --foreground: #0f172a;
+
   /* 카드 컴포넌트 */
-  --card: oklch(1 0 0);                      /* 카드 배경: 흰색 */
-  --card-foreground: oklch(0.141 0.005 285.823); /* 카드 텍스트: 검은색 */
-  
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+
   /* 팝오버 컴포넌트 */
-  --popover: oklch(1 0 0);                   /* 팝오버 배경: 흰색 */
-  --popover-foreground: oklch(0.141 0.005 285.823); /* 팝오버 텍스트: 검은색 */
-  
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+
   /* 주요 색상 */
-  --primary: oklch(0.21 0.006 285.885);      /* 주요 색상: 진한 파란색 */
-  --primary-foreground: oklch(0.985 0 0);    /* 주요 색상 위 텍스트: 흰색 */
-  
+  --primary: #0f172a;
+  --primary-foreground: #f8fafc;
+
   /* 보조 색상 */
-  --secondary: oklch(0.967 0.001 286.375);   /* 보조 색상: 연한 회색 */
-  --secondary-foreground: oklch(0.21 0.006 285.885); /* 보조 색상 위 텍스트: 진한 파란색 */
-  
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+
   /* 음소거된 색상 */
-  --muted: oklch(0.967 0.001 286.375);       /* 음소거 배경: 연한 회색 */
-  --muted-foreground: oklch(0.552 0.016 285.938); /* 음소거 텍스트: 중간 회색 */
-  
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+
   /* 강조 색상 */
-  --accent: oklch(0.967 0.001 286.375);      /* 강조 배경: 연한 회색 */
-  --accent-foreground: oklch(0.21 0.006 285.885); /* 강조 텍스트: 진한 파란색 */
-  
+  --accent: #f48538;
+  --accent-foreground: #f8fafc;
+
   /* 경고/오류 색상 */
-  --destructive: oklch(0.577 0.245 27.325);  /* 경고 배경: 빨간색 */
-  --destructive-foreground: oklch(0.577 0.245 27.325); /* 경고 텍스트: 빨간색 */
-  
+  --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
+
   /* 테두리 및 입력 요소 */
-  --border: oklch(0.92 0.004 286.32);        /* 테두리 색상: 연한 회색 */
-  --input: oklch(0.92 0.004 286.32);         /* 입력 요소 배경: 연한 회색 */
-  --ring: oklch(0.705 0.015 286.067);        /* 포커스 링: 중간 회색 */
-  
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #94a3b8;
+
   /* 차트 색상 */
-  --chart-1: oklch(0.646 0.222 41.116);      /* 차트 색상 1: 주황색 */
-  --chart-2: oklch(0.6 0.118 184.704);       /* 차트 색상 2: 청록색 */
-  --chart-3: oklch(0.398 0.07 227.392);      /* 차트 색상 3: 파란색 */
-  --chart-4: oklch(0.828 0.189 84.429);      /* 차트 색상 4: 노란색 */
-  --chart-5: oklch(0.769 0.188 70.08);       /* 차트 색상 5: 황금색 */
-  
+  --chart-1: oklch(0.646 0.222 41.116); /* 차트 색상 1: 주황색 */
+  --chart-2: oklch(0.6 0.118 184.704); /* 차트 색상 2: 청록색 */
+  --chart-3: oklch(0.398 0.07 227.392); /* 차트 색상 3: 파란색 */
+  --chart-4: oklch(0.828 0.189 84.429); /* 차트 색상 4: 노란색 */
+  --chart-5: oklch(0.769 0.188 70.08); /* 차트 색상 5: 황금색 */
+
   /* 모서리 반경 */
-  --radius: 0.625rem;                        /* 기본 모서리 반경: 10px */
-  
+  --radius: 0.625rem; /* 기본 모서리 반경: 10px */
+
   /* 사이드바 색상 */
-  --sidebar: oklch(0.985 0 0);               /* 사이드바 배경: 흰색 */
+  --sidebar: oklch(0.985 0 0); /* 사이드바 배경: 흰색 */
   --sidebar-foreground: oklch(0.141 0.005 285.823); /* 사이드바 텍스트: 검은색 */
   --sidebar-primary: oklch(0.21 0.006 285.885); /* 사이드바 주요 색상: 진한 파란색 */
   --sidebar-primary-foreground: oklch(0.985 0 0); /* 사이드바 주요 색상 위 텍스트: 흰색 */
   --sidebar-accent: oklch(0.967 0.001 286.375); /* 사이드바 강조 색상: 연한 회색 */
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885); /* 사이드바 강조 색상 위 텍스트: 진한 파란색 */
+  --sidebar-accent-foreground: oklch(
+    0.21 0.006 285.885
+  ); /* 사이드바 강조 색상 위 텍스트: 진한 파란색 */
   --sidebar-border: oklch(0.92 0.004 286.32); /* 사이드바 테두리: 연한 회색 */
   --sidebar-ring: oklch(0.705 0.015 286.067); /* 사이드바 포커스 링: 중간 회색 */
 }
 
 .dark {
   /* 기본 색상 (다크 모드) */
-  --background: #121212;                     /* 배경색: 매우 어두운 회색 (#121212) */
-  --foreground: oklch(0.985 0 0);            /* 전경색(텍스트): 흰색 */
-  
+  --background: #0a0a0a;
+  --foreground: #f8fafc;
+
   /* 카드 컴포넌트 */
-  --card: #121212;                           /* 카드 배경: 매우 어두운 회색 (#121212) */
-  --card-foreground: oklch(0.985 0 0);       /* 카드 텍스트: 흰색 */
-  
+  --card: #18181b;
+  --card-foreground: #f8fafc;
+
   /* 팝오버 컴포넌트 */
-  --popover: #121212;                        /* 팝오버 배경: 매우 어두운 회색 (#121212) */
-  --popover-foreground: oklch(0.985 0 0);    /* 팝오버 텍스트: 흰색 */
-  
+  --popover: #18181b;
+  --popover-foreground: #f8fafc;
+
   /* 주요 색상 */
-  --primary: oklch(0.985 0 0);               /* 주요 색상: 흰색 */
-  --primary-foreground: oklch(0.21 0.006 285.885); /* 주요 색상 위 텍스트: 진한 파란색 */
-  
+  --primary: #f8fafc;
+  --primary-foreground: #0f172a;
+
   /* 보조 색상 */
-  --secondary: oklch(0.274 0.006 286.033);   /* 보조 색상: 어두운 회색 */
-  --secondary-foreground: oklch(0.985 0 0);  /* 보조 색상 위 텍스트: 흰색 */
-  
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+
   /* 음소거된 색상 */
-  --muted: oklch(0.274 0.006 286.033);       /* 음소거 배경: 어두운 회색 */
-  --muted-foreground: oklch(0.705 0.015 286.067); /* 음소거 텍스트: 밝은 회색 */
-  
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+
   /* 강조 색상 */
-  --accent: oklch(0.274 0.006 286.033);      /* 강조 배경: 어두운 회색 */
-  --accent-foreground: oklch(0.985 0 0);     /* 강조 텍스트: 흰색 */
-  
+  --accent: #f48538;
+  --accent-foreground: #f8fafc;
+
   /* 경고/오류 색상 */
-  --destructive: oklch(0.396 0.141 25.723);  /* 경고 배경: 어두운 빨간색 */
-  --destructive-foreground: oklch(0.637 0.237 25.331); /* 경고 텍스트: 밝은 빨간색 */
-  
+  --destructive: #7f1d1d;
+  --destructive-foreground: #ef4444;
+
   /* 테두리 및 입력 요소 */
-  --border: oklch(0.274 0.006 286.033);      /* 테두리 색상: 어두운 회색 */
-  --input: oklch(0.274 0.006 286.033);       /* 입력 요소 배경: 어두운 회색 */
-  --ring: oklch(0.442 0.017 285.786);        /* 포커스 링: 중간 회색 */
-  
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #475569;
+
   /* 차트 색상 */
-  --chart-1: oklch(0.488 0.243 264.376);     /* 차트 색상 1: 보라색 */
-  --chart-2: oklch(0.696 0.17 162.48);       /* 차트 색상 2: 청록색 */
-  --chart-3: oklch(0.769 0.188 70.08);       /* 차트 색상 3: 황금색 */
-  --chart-4: oklch(0.627 0.265 303.9);       /* 차트 색상 4: 분홍색 */
-  --chart-5: oklch(0.645 0.246 16.439);      /* 차트 색상 5: 주황색 */
-  
+  --chart-1: oklch(0.488 0.243 264.376); /* 차트 색상 1: 보라색 */
+  --chart-2: oklch(0.696 0.17 162.48); /* 차트 색상 2: 청록색 */
+  --chart-3: oklch(0.769 0.188 70.08); /* 차트 색상 3: 황금색 */
+  --chart-4: oklch(0.627 0.265 303.9); /* 차트 색상 4: 분홍색 */
+  --chart-5: oklch(0.645 0.246 16.439); /* 차트 색상 5: 주황색 */
+
   /* 사이드바 색상 */
-  --sidebar: oklch(0.21 0.006 285.885);      /* 사이드바 배경: 진한 파란색 */
-  --sidebar-foreground: oklch(0.985 0 0);    /* 사이드바 텍스트: 흰색 */
+  --sidebar: oklch(0.21 0.006 285.885); /* 사이드바 배경: 진한 파란색 */
+  --sidebar-foreground: oklch(0.985 0 0); /* 사이드바 텍스트: 흰색 */
   --sidebar-primary: oklch(0.488 0.243 264.376); /* 사이드바 주요 색상: 보라색 */
   --sidebar-primary-foreground: oklch(0.985 0 0); /* 사이드바 주요 색상 위 텍스트: 흰색 */
   --sidebar-accent: oklch(0.274 0.006 286.033); /* 사이드바 강조 색상: 어두운 회색 */
@@ -166,5 +168,31 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  a {
+    cursor: pointer;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  .scrollbar {
+    overflow-y: auto;
+  }
+
+  /* 스크롤바의 폭 너비 */
+  .scrollbar::-webkit-scrollbar {
+    width: 1px;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-accent;
+    border-radius: 10px; /* 스크롤바 둥근 테두리 */
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    @apply bg-muted;
   }
 }

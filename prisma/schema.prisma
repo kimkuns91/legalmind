@@ -77,8 +77,6 @@ model Conversation {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   userId    String   @db.ObjectId
-  metadata  Json?    // 대화 메타데이터 (문서 요청 정보 등)
-
   // 관계
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages         Message[]
@@ -88,11 +86,12 @@ model Conversation {
 // 메시지 모델
 model Message {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  content        String
+  content        Json         // 메시지 내용 배열 (텍스트, 도구 호출, UI 데이터 등을 포함)
   role           String   // user, assistant
   createdAt      DateTime @default(now())
   conversationId String   @db.ObjectId
   userId         String   @db.ObjectId
+  
 
   // 관계
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)

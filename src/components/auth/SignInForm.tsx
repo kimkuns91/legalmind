@@ -29,7 +29,11 @@ interface LoginResult {
   email?: string;
 }
 
-const SignInForm = () => {
+interface SignInFormProps {
+  callbackUrl?: string;
+}
+
+const SignInForm = ({ callbackUrl }: SignInFormProps) => {
   const router = useRouter();
   const t = useTranslations('SignInForm');
   const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +56,7 @@ const SignInForm = () => {
       }
 
       toast.success(t('validation.loginSuccess'));
-      router.push('/');
+      router.push(callbackUrl || '/');
     } catch (error) {
       console.error('Login error:', error);
       toast.error(t('validation.loginFailed'));
@@ -64,13 +68,8 @@ const SignInForm = () => {
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-
-      // 구글 로그인 시도 - 성공 시 리다이렉션 발생
-      await loginWithGoogle();
-
-      // 리다이렉션이 발생하므로 아래 코드는 실행되지 않음
+      await loginWithGoogle(callbackUrl);
     } catch (error) {
-      // 리다이렉션 에러가 아닌 경우에만 오류 메시지 표시
       if (!(error as { digest?: string })?.digest?.includes('NEXT_REDIRECT')) {
         toast.error(t('validation.googleLoginFailed'));
       }
@@ -82,13 +81,8 @@ const SignInForm = () => {
   const handleKakaoSignIn = async () => {
     try {
       setIsLoading(true);
-
-      // 카카오 로그인 시도 - 성공 시 리다이렉션 발생
-      await loginWithKakao();
-
-      // 리다이렉션이 발생하므로 아래 코드는 실행되지 않음
+      await loginWithKakao(callbackUrl);
     } catch (error) {
-      // 리다이렉션 에러가 아닌 경우에만 오류 메시지 표시
       if (!(error as { digest?: string })?.digest?.includes('NEXT_REDIRECT')) {
         toast.error(t('validation.kakaoLoginFailed'));
       }

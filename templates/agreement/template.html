@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>합의서</title>
+    <style>
+      body {
+        font-family: 'Nanum Myeongjo', serif;
+        margin: 0;
+        padding: 0;
+        color: #333;
+        line-height: 1.6;
+      }
+      .container {
+        width: 210mm;
+        min-height: 297mm;
+        padding: 20mm;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      h1 {
+        font-size: 24pt;
+        font-weight: bold;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+      .parties {
+        margin-bottom: 40px;
+      }
+      .party {
+        margin-bottom: 20px;
+      }
+      .party-title {
+        font-weight: bold;
+        margin-right: 10px;
+      }
+      .content {
+        margin-bottom: 40px;
+        text-align: justify;
+        white-space: pre-line;
+      }
+      .date {
+        margin-bottom: 40px;
+        text-align: center;
+      }
+      .signatures {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 60px;
+      }
+      .signature {
+        text-align: center;
+        width: 45%;
+      }
+      .signature-line {
+        border-top: 1px solid #000;
+        margin-top: 40px;
+        padding-top: 10px;
+      }
+      .contact {
+        font-size: 10pt;
+        margin-top: 5px;
+      }
+      .address {
+        font-size: 10pt;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>합 의 서</h1>
+      </div>
+
+      <div class="parties">
+        <div class="party">
+          <span class="party-title">갑:</span>
+          <span>{{party_a_name}}</span>
+          {{#if party_a_address}}
+          <div class="address">주소: {{party_a_address}}</div>
+          {{/if}} {{#if party_a_contact}}
+          <div class="contact">연락처: {{party_a_contact}}</div>
+          {{/if}}
+        </div>
+
+        <div class="party">
+          <span class="party-title">을:</span>
+          <span>{{party_b_name}}</span>
+          {{#if party_b_address}}
+          <div class="address">주소: {{party_b_address}}</div>
+          {{/if}} {{#if party_b_contact}}
+          <div class="contact">연락처: {{party_b_contact}}</div>
+          {{/if}}
+        </div>
+      </div>
+
+      <div class="content">
+        <p>위 당사자들은 다음과 같이 합의한다.</p>
+        <p>{{agreement_content}}</p>
+
+        {{#if agreement_amount}}
+        <p>합의금액: {{agreement_amount}}</p>
+        {{/if}}
+      </div>
+
+      <div class="date">
+        <p>{{formatted_date}}</p>
+      </div>
+
+      <div class="signatures">
+        <div class="signature">
+          <div>갑</div>
+          <div class="signature-line">{{party_a_name}} (인)</div>
+        </div>
+
+        <div class="signature">
+          <div>을</div>
+          <div class="signature-line">{{party_b_name}} (인)</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

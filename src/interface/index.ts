@@ -1,3 +1,5 @@
+import { JsonValue } from '@prisma/client/runtime/library';
+
 // 사용자 인터페이스
 export interface IUser {
   id: string;
@@ -55,7 +57,7 @@ export interface IConversation {
 // 메시지 인터페이스
 export interface IMessage {
   id: string;
-  content: string;
+  content: string | JsonValue;
   role: 'user' | 'assistant';
   createdAt: Date;
   conversationId: string;
@@ -77,23 +79,55 @@ export interface IDocument {
 }
 
 // 문서 유형 열거형
-export enum DocumentType {
-  CONTRACT = 'contract',
-  COMPLAINT = 'complaint',
-  PETITION = 'petition',
-  AGREEMENT = 'agreement',
-  POWER_OF_ATTORNEY = 'powerOfAttorney',
-  OTHER = 'other',
-}
+// export enum DocumentType {
+//   CONTRACT = 'contract',
+//   COMPLAINT = 'complaint',
+//   PETITION = 'petition',
+//   AGREEMENT = 'agreement',
+//   POWER_OF_ATTORNEY = 'powerOfAttorney',
+//   OTHER = 'other',
+// }
 
 // 문서 요청 인터페이스 (AI 채팅에서 사용)
 export interface IDocumentRequest {
   id: string;
   documentType: DocumentType;
   status: 'pending' | 'processing' | 'completed' | 'failed';
-  parameters: Record<string, any>;
+  parameters: Record<string, string | number | boolean | null>;
   fileUrl?: string;
   conversationId: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+// 메시지 콘텐츠 타입 정의
+export interface ITextContent {
+  type: 'text';
+  text: string;
+}
+
+export interface IToolResultContent {
+  type: 'tool-result';
+  toolName: string;
+  toolCallId: string;
+  result: string | ICaseLaw[] | object;
+}
+
+export interface IUIContent {
+  type: 'ui';
+  uiType: string;
+  uiData: object;
+}
+
+export type IMessageContent = ITextContent | IToolResultContent | IUIContent;
+
+export interface ICaseLaw {
+  id: string;
+  title: string;
+  content: string;
+  keywords: string[];
+  court: string;
+  caseNumber: string;
+  decisionDate: Date;
+  url: string;
 }

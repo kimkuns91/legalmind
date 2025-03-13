@@ -18,7 +18,7 @@ export default function HeroSection() {
           <div className="max-w-2xl">
             <h1 className="mb-6 text-4xl leading-tight font-bold text-gray-900 md:text-5xl lg:text-6xl">
               AI 기술로 더 쉽고 빠른 <br />
-              <span className="text-[#F58733]">법률 상담</span>
+              <span className="text-[#F58733]">법률 문서 작성</span>
             </h1>
             <p className="mb-8 text-xl text-gray-600">
               복잡한 법률 문제, 이제 <span className="font-bold text-[#F58733]">해주세요</span>와

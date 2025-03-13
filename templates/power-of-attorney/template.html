@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>위임장</title>
+    <style>
+      body {
+        font-family: 'Nanum Myeongjo', serif;
+        margin: 0;
+        padding: 0;
+        color: #333;
+        line-height: 1.6;
+      }
+      .container {
+        width: 210mm;
+        min-height: 297mm;
+        padding: 20mm;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      h1 {
+        font-size: 24pt;
+        font-weight: bold;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+      .parties {
+        margin-bottom: 40px;
+      }
+      .party {
+        margin-bottom: 20px;
+      }
+      .party-title {
+        font-weight: bold;
+        margin-right: 10px;
+      }
+      .content {
+        margin-bottom: 40px;
+        text-align: justify;
+        white-space: pre-line;
+      }
+      .date {
+        margin-bottom: 40px;
+        text-align: center;
+      }
+      .signatures {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 60px;
+      }
+      .signature {
+        text-align: center;
+        width: 45%;
+      }
+      .signature-line {
+        border-top: 1px solid #000;
+        margin-top: 40px;
+        padding-top: 10px;
+      }
+      .contact {
+        font-size: 10pt;
+        margin-top: 5px;
+      }
+      .address {
+        font-size: 10pt;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>위 임 장</h1>
+      </div>
+
+      <div class="parties">
+        <div class="party">
+          <span class="party-title">위임인:</span>
+          <span>{{principal_name}}</span>
+          {{#if principal_address}}
+          <div class="address">주소: {{principal_address}}</div>
+          {{/if}} {{#if principal_contact}}
+          <div class="contact">연락처: {{principal_contact}}</div>
+          {{/if}}
+        </div>
+
+        <div class="party">
+          <span class="party-title">수임인:</span>
+          <span>{{agent_name}}</span>
+          {{#if agent_address}}
+          <div class="address">주소: {{agent_address}}</div>
+          {{/if}} {{#if agent_contact}}
+          <div class="contact">연락처: {{agent_contact}}</div>
+          {{/if}}
+        </div>
+      </div>
+
+      <div class="content">
+        <p>위임인은 수임인에게 다음의 권한을 위임합니다.</p>
+        <p><strong>위임사항:</strong></p>
+        <p>{{scope_of_authority}}</p>
+
+        {{#if duration}}
+        <p><strong>위임기간:</strong> {{duration}}</p>
+        {{/if}}
+      </div>
+
+      <div class="date">
+        <p>{{formatted_date}}</p>
+      </div>
+
+      <div class="signatures">
+        <div class="signature">
+          <div>위임인</div>
+          <div class="signature-line">{{principal_name}} (인)</div>
+        </div>
+
+        <div class="signature">
+          <div>수임인</div>
+          <div class="signature-line">{{agent_name}} (인)</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

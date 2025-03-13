@@ -14,12 +14,14 @@ import { useEffect, useState } from 'react';
 import { IoLogOutOutline } from 'react-icons/io5';
 import Link from 'next/link';
 import { Switch } from '@/components/ui/switch';
+import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 
 export default function UserControlBar() {
   const { data: session, status } = useSession();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
 
   // 클라이언트 사이드에서만 테마 관련 기능 사용
   useEffect(() => {
@@ -31,7 +33,7 @@ export default function UserControlBar() {
   };
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/' });
+    await signOut();
   };
 
   // 로그인 상태가 아닌 경우 로그인 버튼 표시
@@ -39,8 +41,8 @@ export default function UserControlBar() {
     return (
       <div className="border-border mt-auto border-t p-4">
         <Link
-          href="/login"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-500 p-3 text-black transition-colors hover:bg-green-400"
+          href={`/login?callbackUrl=${encodeURIComponent('/ai')}`}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 flex w-full items-center justify-center gap-2 rounded-lg p-3 transition-colors"
         >
           <FaUser className="text-sm" />
           <span className="font-medium">로그인</span>
@@ -48,7 +50,6 @@ export default function UserControlBar() {
       </div>
     );
   }
-
   // 로딩 중인 경우 스켈레톤 UI 표시
   if (status === 'loading' || !mounted) {
     return (
@@ -72,7 +73,7 @@ export default function UserControlBar() {
       <div className="flex items-center justify-between">
         <DropdownMenu>
           <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 outline-none">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-black">
+            <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full">
               {session?.user?.name?.[0] || 'U'}
             </div>
             <div className="text-sm">
@@ -82,12 +83,18 @@ export default function UserControlBar() {
               </p>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-56 cursor-pointer">
-            <DropdownMenuItem className="flex items-center gap-2">
+          <DropdownMenuContent align="start" className="bg-background w-56 cursor-pointer">
+            <DropdownMenuItem
+              className="flex cursor-pointer items-center gap-2"
+              onClick={() => router.push('/mypage')}
+            >
               <FaUser className="text-sm" />
               <span>프로필</span>
             </DropdownMenuItem>
-            <DropdownMenuItem className="flex items-center gap-2">
+            <DropdownMenuItem
+              className="flex cursor-pointer items-center gap-2"
+              onClick={() => router.push('/settings')}
+            >
               <FaCog className="text-sm" />
               <span>설정</span>
             </DropdownMenuItem>
@@ -98,20 +105,20 @@ export default function UserControlBar() {
                   {theme === 'dark' ? (
                     <FaMoon className="text-sm" />
                   ) : (
-                    <FaSun className="text-sm text-orange-500" />
+                    <FaSun className="text-primary text-sm" />
                   )}
                   <span className="text-sm">다크 모드</span>
                 </div>
                 <Switch
                   checked={theme === 'dark'}
                   onCheckedChange={toggleTheme}
-                  className="cursor-pointer data-[state=checked]:bg-green-500"
+                  className="data-[state=checked]:bg-primary cursor-pointer"
                 />
               </div>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="flex items-center gap-2 text-red-500 dark:text-red-400"
+              className="text-destructive-foreground flex cursor-pointer items-center gap-2"
               onClick={handleLogout}
             >
               <IoLogOutOutline className="text-sm" />

@@ -2,7 +2,13 @@ import Logo from '@/components/common/Logo';
 import SignInForm from '@/components/auth/SignInForm';
 import { cn } from '@/lib/utils';
 
-export default function LoginPage() {
+interface LoginPageProps {
+  searchParams?: Promise<{ callbackUrl?: string }>;
+}
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const resolvedParams = await searchParams;
+
   return (
     <div className="from-background to-background/80 flex min-h-screen items-center justify-center bg-gradient-to-b p-4 transition-all duration-300 dark:from-gray-950 dark:to-gray-900">
       <div className="border-border bg-card w-full max-w-md rounded-xl border p-6 shadow-sm transition-all duration-300 dark:border-gray-800 dark:bg-gray-900/50 dark:shadow-lg">
@@ -34,7 +40,7 @@ export default function LoginPage() {
 
         {/* 로그인 폼 */}
         <div className="w-full">
-          <SignInForm />
+          <SignInForm callbackUrl={resolvedParams?.callbackUrl} />
         </div>
       </div>
     </div>

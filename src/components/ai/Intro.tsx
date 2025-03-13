@@ -6,6 +6,7 @@ import { FaArrowRight } from 'react-icons/fa';
 import { cn } from '@/lib/utils';
 import { createConversationAndRedirect } from '@/actions/conversation';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 
 interface IntroProps {
@@ -20,6 +21,8 @@ const Intro = ({ userId }: IntroProps) => {
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  console.log('message', message);
+  const navigate = useRouter();
   // 클라이언트 사이드에서만 테마 관련 기능 사용
   useEffect(() => {
     setMounted(true);
@@ -46,10 +49,17 @@ const Intro = ({ userId }: IntroProps) => {
 
       // 서버 액션 호출하여 대화 생성 및 URL 받기
       const result = await createConversationAndRedirect(message);
+      console.log('대화 생성 결과:', result);
 
       // 서버 액션에서 반환된 URL로 리다이렉트
       if (result?.redirectUrl) {
-        window.location.href = result.redirectUrl;
+        // 초기 메시지를 localStorage에 임시 저장
+        if (result.initialMessage) {
+          localStorage.setItem('initialMessage', JSON.stringify(result.initialMessage));
+        }
+        navigate.push(result.redirectUrl);
+      } else {
+        throw new Error('대화 생성 후 리다이렉트 URL을 받지 못했습니다.');
       }
       setMessage('');
       setIsSubmitting(false);
@@ -136,7 +146,7 @@ const Intro = ({ userId }: IntroProps) => {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="flex min-h-screen w-full items-center justify-center"
+      className="bg-card flex min-h-screen w-full items-center justify-center"
     >
       <div className="flex w-full max-w-[600px] flex-col px-4 py-12">
         <motion.h2

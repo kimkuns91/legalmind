@@ -13,7 +13,7 @@ interface ISideBarProps {
 }
 
 export default function SideBar({ isSidebarVisible }: ISideBarProps) {
-  const theme = useTheme();
+  const { theme } = useTheme();
   return (
     <aside
       className={cn(
@@ -24,7 +24,7 @@ export default function SideBar({ isSidebarVisible }: ISideBarProps) {
         isSidebarVisible ? 'translate-x-0' : '-translate-x-full md:-translate-x-64'
       )}
     >
-      <div className={cn('px-2 py-6', 'border-border border-b')}>
+      <div className={cn('border-border border-b px-2 py-6')}>
         {/* 로고 */}
         <div className="mb-6 w-2/3 pl-4">
           <Logo
@@ -33,7 +33,7 @@ export default function SideBar({ isSidebarVisible }: ISideBarProps) {
             width={140}
             height={60}
             className="mb-4"
-            light={theme.theme === 'dark'}
+            light={theme === 'dark'}
           />
         </div>
         <IconLink href="/ai" icon={<MdHome className="text-lg" />} text="채팅 홈" />

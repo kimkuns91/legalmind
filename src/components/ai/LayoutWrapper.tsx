@@ -22,7 +22,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
   if (!mounted) return null;
 
   return (
-    <div className={cn('max-h-screen min-h-screen w-full', 'flex md:flex-col')}>
+    <div className={cn('bg-background max-h-screen min-h-screen w-full', 'flex md:flex-col')}>
       {/* desktop sidebar */}
       <SideBar isSidebarVisible={isSidebarVisible} />
       <div

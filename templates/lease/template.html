@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>임대차계약서</title>
+    <style>
+      body {
+        font-family: 'Nanum Myeongjo', serif;
+        margin: 0;
+        padding: 0;
+        color: #333;
+        line-height: 1.6;
+      }
+      .container {
+        width: 210mm;
+        min-height: 297mm;
+        padding: 20mm;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+      h1 {
+        font-size: 24pt;
+        font-weight: bold;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+      .section {
+        margin-bottom: 20px;
+      }
+      .party-info {
+        margin-bottom: 15px;
+      }
+      .property-info {
+        margin-bottom: 30px;
+      }
+      .terms {
+        margin-bottom: 40px;
+      }
+      .signatures {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 60px;
+      }
+      .signature {
+        text-align: center;
+        width: 45%;
+      }
+      .signature-line {
+        border-top: 1px solid #000;
+        margin-top: 40px;
+        padding-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>부동산 임대차계약서</h1>
+
+      <div class="section">
+        <div class="party-info">
+          <h3>임대인</h3>
+          <p>성명: {{lessor_name}}</p>
+          {{#if lessor_address}}
+          <p>주소: {{lessor_address}}</p>
+          {{/if}} {{#if lessor_contact}}
+          <p>연락처: {{lessor_contact}}</p>
+          {{/if}}
+        </div>
+
+        <div class="party-info">
+          <h3>임차인</h3>
+          <p>성명: {{lessee_name}}</p>
+          {{#if lessee_address}}
+          <p>주소: {{lessee_address}}</p>
+          {{/if}} {{#if lessee_contact}}
+          <p>연락처: {{lessee_contact}}</p>
+          {{/if}}
+        </div>
+      </div>
+
+      <div class="property-info">
+        <h3>임대물건</h3>
+        <p>소재지: {{property_address}}</p>
+        {{#if property_type}}
+        <p>물건종류: {{property_type}}</p>
+        {{/if}} {{#if property_size}}
+        <p>면적: {{property_size}}</p>
+        {{/if}}
+      </div>
+
+      <div class="terms">
+        <h3>계약내용</h3>
+        <p>1. 보증금: {{deposit}}</p>
+        <p>2. 월세: {{monthly_rent}}</p>
+        <p>3. 계약기간: {{lease_period}}</p>
+        {{#if special_terms}}
+        <p>4. 특약사항:</p>
+        <p>{{special_terms}}</p>
+        {{/if}}
+      </div>
+
+      <div class="date">
+        <p>{{formatted_date}}</p>
+      </div>
+
+      <div class="signatures">
+        <div class="signature">
+          <div>임대인</div>
+          <div class="signature-line">{{lessor_name}} (인)</div>
+        </div>
+        <div class="signature">
+          <div>임차인</div>
+          <div class="signature-line">{{lessee_name}} (인)</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

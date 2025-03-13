@@ -10,13 +10,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { FaCog, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { signOut, useSession } from 'next-auth/react';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { RiFileList3Line } from 'react-icons/ri';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface IHeaderAuthSectionProps {
@@ -24,6 +24,8 @@ interface IHeaderAuthSectionProps {
 }
 
 const HeaderAuthSection = ({ className }: IHeaderAuthSectionProps) => {
+  const pathname = usePathname();
+  console.log('HeaderAuthSection', pathname);
   const { data: session, status } = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -95,7 +97,7 @@ const HeaderAuthSection = ({ className }: IHeaderAuthSectionProps) => {
             <DropdownMenuSeparator className="my-1 bg-gray-200" />
             <DropdownMenuItem
               className="cursor-pointer rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
-              onClick={() => router.push('/profile')}
+              onClick={() => router.push('/mypage')}
             >
               <FaUser className="mr-2 h-4 w-4 text-gray-500" />
               <span>내 프로필</span>
@@ -146,7 +148,7 @@ const HeaderAuthSection = ({ className }: IHeaderAuthSectionProps) => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <Link href="/login">
+      <Link href={`/login?callbackUrl=${encodeURIComponent(pathname)}`}>
         <Button
           variant="ghost"
           className="h-9 cursor-pointer rounded-lg border border-transparent px-4 text-sm font-medium text-gray-700 transition-all hover:bg-gray-100"

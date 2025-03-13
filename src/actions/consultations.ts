@@ -1,46 +1,58 @@
 'use server';
 
+import { IConversation, IMessage } from '@/interface';
+
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 /**
  * 사용자의 최근 상담 내역을 가져오는 서버 액션
  * @param limit 가져올 상담 내역의 최대 개수 (기본값: 5)
+ * @param skip 건너뛸 상담 내역의 개수 (기본값: 0)
  * @returns 최근 상담 내역 배열 또는 에러 객체
  */
-export async function getRecentConsultations(limit: number = 5) {
+export async function getRecentConsultations(
+  limit: number = 5,
+  skip: number = 0
+): Promise<{ conversations: IConversation[]; error?: string }> {
   try {
-    // 현재 인증된 사용자 정보 가져오기
     const session = await auth();
-
-    // 인증되지 않은 경우 에러 반환
-    if (!session || !session.user || !session.user.id) {
-      return { error: '인증되지 않은 사용자입니다.' };
+    if (!session?.user?.id) {
+      return { error: '로그인이 필요합니다.', conversations: [] };
     }
 
-    // 사용자의 최근 상담 내역 가져오기
     const conversations = await prisma.conversation.findMany({
       where: {
         userId: session.user.id,
+      },
+      include: {
+        messages: {
+          orderBy: {
+            createdAt: 'asc',
+          },
+          take: 1,
+        },
       },
       orderBy: {
         updatedAt: 'desc',
       },
       take: limit,
-      include: {
-        messages: {
-          orderBy: {
-            createdAt: 'desc',
-          },
-          take: 1,
-        },
-      },
+      skip: skip,
     });
 
-    return { conversations };
+    // Prisma 결과를 IConversation 타입으로 변환
+    const typedConversations: IConversation[] = conversations.map(conv => ({
+      ...conv,
+      messages: conv.messages.map(msg => ({
+        ...msg,
+        role: msg.role as 'user' | 'assistant',
+      })) as IMessage[],
+    }));
+
+    return { conversations: typedConversations };
   } catch (error) {
-    console.error('최근 상담 내역 조회 중 오류 발생:', error);
-    return { error: '상담 내역을 불러오는 중 오류가 발생했습니다.' };
+    console.error('상담 내역 조회 중 오류:', error);
+    return { error: '상담 내역을 불러오는 중 오류가 발생했습니다.', conversations: [] };
   }
 }
 
