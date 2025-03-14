@@ -9,7 +9,7 @@ import { generateId } from 'ai';
 import { useScrollToBottom } from '@/components/ai/UseScrollToBottom';
 
 // Allow streaming responses up to 60 seconds
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 interface AiClientProps {
   roomId: string;

@@ -88,9 +88,9 @@ export interface ITemplate {
  */
 export interface ITemplateRegistry {
   // 문서 유형으로 템플릿 조회
-  getTemplate: (type: DocumentType) => ITemplate;
+  getTemplate: (type: DocumentType) => Promise<ITemplate>;
   // 모든 템플릿 목록 반환
-  getAllTemplates: () => ITemplate[];
+  getAllTemplates: () => Promise<ITemplate[]>;
   // 템플릿 등록
   registerTemplate: (template: ITemplate) => void;
 }

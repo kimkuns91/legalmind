@@ -4,7 +4,7 @@
  * - S3에서 업데이트된 템플릿을 동적으로 로드 (있는 경우)
  */
 import { DocumentType, ITemplate, ITemplateRegistry } from './types';
-import { getFileContent, getTemplatePath } from '@/lib/s3';
+import { getFileContent, getTemplatePath } from '../src/lib/s3-utils';
 import Handlebars from 'handlebars';
 
 /**
@@ -217,7 +217,10 @@ class TemplateRegistry implements ITemplateRegistry {
 
         // 한글 키와 영문 키 모두 처리
         if (metadata.schema && metadata.schema.keyMapping) {
-          for (const [korKey, engKey] of Object.entries(metadata.schema.keyMapping)) {
+          for (const [korKey, engKey] of Object.entries(metadata.schema.keyMapping) as [
+            string,
+            string,
+          ][]) {
             result[engKey] = params[engKey] || params[korKey] || '';
           }
         }

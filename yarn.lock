@@ -28,6 +28,16 @@
     nanoid "^3.3.8"
     secure-json-parse "^2.7.0"
 
+"@ai-sdk/provider-utils@2.1.12":
+  version "2.1.12"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/provider-utils/-/provider-utils-2.1.12.tgz#aa6c7fdd331702d16aeae36b045e2a56ea8fd124"
+  integrity sha512-NLm2Ypkv419jR5TNOvZ057ciSYFKzSDEIIwE8cRyeR1Y5RbuX+auZveqGg6GWsDzvUnn6Xra7BJmr0422v60UA==
+  dependencies:
+    "@ai-sdk/provider" "1.0.10"
+    eventsource-parser "^3.0.0"
+    nanoid "^3.3.8"
+    secure-json-parse "^2.7.0"
+
 "@ai-sdk/provider@1.0.10":
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/@ai-sdk/provider/-/provider-1.0.10.tgz#f537fec1e5459d4aeb8eb99bec015c327a01516d"
@@ -35,23 +45,23 @@
   dependencies:
     json-schema "^0.4.0"
 
-"@ai-sdk/react@1.1.21":
-  version "1.1.21"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/react/-/react-1.1.21.tgz#2cd1d83c60e7d6c6a8aee88d1038b70e1b970f50"
-  integrity sha512-VKgqzG5wKjyLhROiFhRdyMuDcGu5QPfdLU5J7ovqR1HecknxymL3nCXsxWbAaiZ0khm2EsST6L6zwUbriZrKgg==
+"@ai-sdk/react@1.1.22":
+  version "1.1.22"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/react/-/react-1.1.22.tgz#f938d56808fe38ef7698aefe2a2c0e1ff9b8e860"
+  integrity sha512-+ZlmJBu9NH59wvAtuh+xXEJ2MEfisBpVbYwN347+VlJJ3LfHVH9Rp1d58jVwBsfJvDUMn5UMuHZIXIdQhJIBTg==
   dependencies:
-    "@ai-sdk/provider-utils" "2.1.11"
-    "@ai-sdk/ui-utils" "1.1.17"
+    "@ai-sdk/provider-utils" "2.1.12"
+    "@ai-sdk/ui-utils" "1.1.18"
     swr "^2.2.5"
     throttleit "2.1.0"
 
-"@ai-sdk/ui-utils@1.1.17":
-  version "1.1.17"
-  resolved "https://registry.yarnpkg.com/@ai-sdk/ui-utils/-/ui-utils-1.1.17.tgz#937788d0da2079e1f9dde83ac2be994897210458"
-  integrity sha512-fCnp/wntZGqPf6tiCmhuQoSDLSBhXoI5DU2JX4As96EO870+jliE6ozvYUwYOZC6Ta2OKAjjWPcSP7HeHX0b+g==
+"@ai-sdk/ui-utils@1.1.18":
+  version "1.1.18"
+  resolved "https://registry.yarnpkg.com/@ai-sdk/ui-utils/-/ui-utils-1.1.18.tgz#b9df2a3cabe67c5c66b0919920388f375a48a140"
+  integrity sha512-PCDXKKKHqA8Oqm5LsXl3Byxmit0r0Gg3nMPI3bdEriDIExoQikULX2T6/IS5u1qNeoC3UK5F2acpCyl5Q+aIuQ==
   dependencies:
     "@ai-sdk/provider" "1.0.10"
-    "@ai-sdk/provider-utils" "2.1.11"
+    "@ai-sdk/provider-utils" "2.1.12"
     zod-to-json-schema "^3.24.1"
 
 "@alloc/quick-lru@^5.2.0":
@@ -156,6 +166,56 @@
   dependencies:
     "@aws-sdk/types" "^3.222.0"
     "@smithy/util-utf8" "^2.0.0"
+    tslib "^2.6.2"
+
+"@aws-sdk/client-lambda@^3.758.0":
+  version "3.758.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-lambda/-/client-lambda-3.758.0.tgz#39b29c5ed78dfc8316923f90e5249b6036c3b8b0"
+  integrity sha512-k7L9fe0NN1v2Vhg4ofA1pb26gTdGVFdkA6XUQyElLEdcKzJzoYiQ60faNLuMPfH0zsKNvy/xKfNOD6DFZWjgEg==
+  dependencies:
+    "@aws-crypto/sha256-browser" "5.2.0"
+    "@aws-crypto/sha256-js" "5.2.0"
+    "@aws-sdk/core" "3.758.0"
+    "@aws-sdk/credential-provider-node" "3.758.0"
+    "@aws-sdk/middleware-host-header" "3.734.0"
+    "@aws-sdk/middleware-logger" "3.734.0"
+    "@aws-sdk/middleware-recursion-detection" "3.734.0"
+    "@aws-sdk/middleware-user-agent" "3.758.0"
+    "@aws-sdk/region-config-resolver" "3.734.0"
+    "@aws-sdk/types" "3.734.0"
+    "@aws-sdk/util-endpoints" "3.743.0"
+    "@aws-sdk/util-user-agent-browser" "3.734.0"
+    "@aws-sdk/util-user-agent-node" "3.758.0"
+    "@smithy/config-resolver" "^4.0.1"
+    "@smithy/core" "^3.1.5"
+    "@smithy/eventstream-serde-browser" "^4.0.1"
+    "@smithy/eventstream-serde-config-resolver" "^4.0.1"
+    "@smithy/eventstream-serde-node" "^4.0.1"
+    "@smithy/fetch-http-handler" "^5.0.1"
+    "@smithy/hash-node" "^4.0.1"
+    "@smithy/invalid-dependency" "^4.0.1"
+    "@smithy/middleware-content-length" "^4.0.1"
+    "@smithy/middleware-endpoint" "^4.0.6"
+    "@smithy/middleware-retry" "^4.0.7"
+    "@smithy/middleware-serde" "^4.0.2"
+    "@smithy/middleware-stack" "^4.0.1"
+    "@smithy/node-config-provider" "^4.0.1"
+    "@smithy/node-http-handler" "^4.0.3"
+    "@smithy/protocol-http" "^5.0.1"
+    "@smithy/smithy-client" "^4.1.6"
+    "@smithy/types" "^4.1.0"
+    "@smithy/url-parser" "^4.0.1"
+    "@smithy/util-base64" "^4.0.0"
+    "@smithy/util-body-length-browser" "^4.0.0"
+    "@smithy/util-body-length-node" "^4.0.0"
+    "@smithy/util-defaults-mode-browser" "^4.0.7"
+    "@smithy/util-defaults-mode-node" "^4.0.7"
+    "@smithy/util-endpoints" "^3.0.1"
+    "@smithy/util-middleware" "^4.0.1"
+    "@smithy/util-retry" "^4.0.1"
+    "@smithy/util-stream" "^4.1.2"
+    "@smithy/util-utf8" "^4.0.0"
+    "@smithy/util-waiter" "^4.0.2"
     tslib "^2.6.2"
 
 "@aws-sdk/client-s3@^3.758.0":
@@ -2047,6 +2107,14 @@
     "@smithy/types" "^4.1.0"
     tslib "^2.6.2"
 
+"@sparticuz/chromium@^133.0.0":
+  version "133.0.0"
+  resolved "https://registry.yarnpkg.com/@sparticuz/chromium/-/chromium-133.0.0.tgz#515bb917d470828c0ffa5644eced95830f9ce83c"
+  integrity sha512-wioNxMtSxRI+Y6ymc/UFPX9lY7A1SDgBezjFITH6arwe5CONfWosNDGpgflUGYajxxGktb1k3kjJ83jWzbccBw==
+  dependencies:
+    follow-redirects "^1.15.9"
+    tar-fs "^3.0.8"
+
 "@swc/counter@0.1.3":
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/@swc/counter/-/counter-0.1.3.tgz#cc7463bd02949611c6329596fccd2b0ec782b0e9"
@@ -2271,6 +2339,13 @@
   dependencies:
     undici-types "~6.19.2"
 
+"@types/puppeteer-core@^7.0.4":
+  version "7.0.4"
+  resolved "https://registry.yarnpkg.com/@types/puppeteer-core/-/puppeteer-core-7.0.4.tgz#916d39e408d424ad8851df16440ce51e0d8d56ca"
+  integrity sha512-7YK4lAjXTAsFN0HFWSRr43J1iQX+xoI5EXyOYnG6F+OhqkTR+L8bYnU8dqELrKmzvbSlxczh3F7dEBJ7TriqEw==
+  dependencies:
+    puppeteer-core "*"
+
 "@types/react-dom@^19":
   version "19.0.4"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-19.0.4.tgz#bedba97f9346bd4c0fe5d39e689713804ec9ac89"
@@ -2406,16 +2481,17 @@ agent-base@^7.1.0, agent-base@^7.1.2:
   resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-7.1.3.tgz#29435eb821bc4194633a5b89e5bc4703bafc25a1"
   integrity sha512-jRR5wdylq8CkOe6hei19GGZnxM6rBGwFl3Bg0YItGDimvjGtAvdZk4Pu6Cl4u4Igsws4a1fd1Vq3ezrhn4KmFw==
 
-ai@^4.1.53:
-  version "4.1.53"
-  resolved "https://registry.yarnpkg.com/ai/-/ai-4.1.53.tgz#f584c5ea61e148ea5d709693c4c15ab639205ed0"
-  integrity sha512-krLPk+OKLmVGRmsxI+FhbwETiuHFPESVI/Fl8ao/AAYjF2TYr0QFdPSQ8Fk9gWHUi47H+ZDnvJx05Xp/z4UccA==
+ai@^4.1.59:
+  version "4.1.59"
+  resolved "https://registry.yarnpkg.com/ai/-/ai-4.1.59.tgz#d0b53c3221713ae56adf1e1e634a8d8470a91b55"
+  integrity sha512-8lpm3YS/f9yWsHcEDeJqVZd7Ds5t22dbWecSQ3+TyHCutpUSAEykN+B0NZFjOoR7xXWxrmNPl1v8GBKmKNAePg==
   dependencies:
     "@ai-sdk/provider" "1.0.10"
-    "@ai-sdk/provider-utils" "2.1.11"
-    "@ai-sdk/react" "1.1.21"
-    "@ai-sdk/ui-utils" "1.1.17"
+    "@ai-sdk/provider-utils" "2.1.12"
+    "@ai-sdk/react" "1.1.22"
+    "@ai-sdk/ui-utils" "1.1.18"
     "@opentelemetry/api" "1.9.0"
+    eventsource-parser "^3.0.0"
     jsondiffpatch "0.6.0"
 
 ajv@^6.12.4:
@@ -3677,6 +3753,11 @@ flatted@^3.2.9:
   version "3.3.3"
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.3.3.tgz#67c8fad95454a7c7abebf74bb78ee74a44023358"
   integrity sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==
+
+follow-redirects@^1.15.9:
+  version "1.15.9"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.9.tgz#a604fa10e443bf98ca94228d9eebcc2e8a2c8ee1"
+  integrity sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==
 
 for-each@^0.3.3:
   version "0.3.5"
@@ -5482,7 +5563,7 @@ punycode@^2.1.0:
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.3.1.tgz#027422e2faec0b25e1549c3e1bd8309b9133b6e5"
   integrity sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==
 
-puppeteer-core@24.4.0:
+puppeteer-core@*, puppeteer-core@24.4.0, puppeteer-core@^24.4.0:
   version "24.4.0"
   resolved "https://registry.yarnpkg.com/puppeteer-core/-/puppeteer-core-24.4.0.tgz#a301c58344fe939b487704593681ea9f913fe6f8"
   integrity sha512-eFw66gCnWo0X8Hyf9KxxJtms7a61NJVMiSaWfItsFPzFBsjsWdmcNlBdsA1WVwln6neoHhsG+uTVesKmTREn/g==

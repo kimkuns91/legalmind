@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  GeneratePDFFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: src/actions/ai/document/create-document.createPDF
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      MemorySize: 2048
+      Timeout: 30
+      Environment:
+        Variables:
+          AWS_REGION: ap-northeast-2
+          AWS_BUCKET_NAME: whitemousedev-legal-documents
+      Policies:
+        - S3FullAccessPolicy:
+            BucketName: whitemousedev-legal-documents
+        - CloudWatchLogsFullAccess

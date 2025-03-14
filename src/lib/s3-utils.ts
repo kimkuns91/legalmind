@@ -90,3 +90,46 @@ export function getFileNameFromKey(key: string): string {
 
   return originalFileName;
 }
+
+/**
+ * S3에서 파일 내용 가져오기
+ *
+ * @param key 파일 키 (S3 내 경로)
+ * @returns 파일 내용 (문자열)
+ */
+export async function getFileContent(key: string): Promise<string | null> {
+  try {
+    const command = new GetObjectCommand({
+      Bucket: AWS_BUCKET_NAME,
+      Key: key,
+    });
+
+    const response = await s3Client.send(command);
+    if (!response.Body) return null;
+
+    // Stream을 문자열로 변환
+    const streamToString = async (stream: any): Promise<string> => {
+      const chunks: any[] = [];
+      for await (const chunk of stream) {
+        chunks.push(chunk);
+      }
+      return Buffer.concat(chunks).toString('utf-8');
+    };
+
+    return await streamToString(response.Body);
+  } catch (error) {
+    console.error('Failed to get file content from S3:', error);
+    return null;
+  }
+}
+
+/**
+ * 템플릿 파일 경로 생성
+ *
+ * @param type 문서 유형
+ * @param fileName 파일 이름
+ * @returns S3 내 템플릿 파일 경로
+ */
+export function getTemplatePath(type: string, fileName: string): string {
+  return `templates/${type}/${fileName}`;
+}

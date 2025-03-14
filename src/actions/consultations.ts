@@ -41,9 +41,9 @@ export async function getRecentConsultations(
     });
 
     // Prisma 결과를 IConversation 타입으로 변환
-    const typedConversations: IConversation[] = conversations.map(conv => ({
+    const typedConversations: IConversation[] = conversations.map((conv: any) => ({
       ...conv,
-      messages: conv.messages.map(msg => ({
+      messages: conv.messages.map((msg: any) => ({
         ...msg,
         role: msg.role as 'user' | 'assistant',
       })) as IMessage[],

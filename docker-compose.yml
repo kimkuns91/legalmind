@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+      # - '8080:3000'
+    env_file:
+      - .env.local
+    environment:
+      - NODE_ENV=development
+      - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+    volumes:
+      - .env.local:/app/.env.local:ro
+    restart: unless-stopped

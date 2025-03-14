@@ -1,5 +1,6 @@
 import Handlebars from 'handlebars';
-import puppeteer from 'puppeteer';
+import chromium from '@sparticuz/chromium';
+import puppeteer from 'puppeteer-core';
 import { templateIndex } from '@/lib/templates/templateRegistry';
 import { uploadPDFToS3 } from './upload-pdf';
 
@@ -16,13 +17,6 @@ const PDF_CONFIG = {
   maxRetries: 3,
   retryDelay: 1000,
 } as const;
-
-const PUPPETEER_ARGS = [
-  '--no-sandbox',
-  '--disable-setuid-sandbox',
-  '--disable-dev-shm-usage',
-  '--font-render-hinting=none',
-] as string[];
 
 const DOCUMENT_STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&display=swap');
@@ -183,9 +177,14 @@ export async function createPDF({
 
     return await withRetry(
       async () => {
+        // Lambda 환경에서 Chromium 실행
+        const executablePath = await chromium.executablePath();
+
         const browser = await puppeteer.launch({
-          headless: true,
-          args: PUPPETEER_ARGS,
+          args: chromium.args,
+          defaultViewport: chromium.defaultViewport,
+          executablePath,
+          headless: chromium.headless,
         });
 
         try {

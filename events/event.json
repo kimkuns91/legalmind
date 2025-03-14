@@ -1,0 +1,8 @@
+{
+    "template": "<html><body><h1>{{title}}</h1><p>{{content}}</p></body></html>",
+    "params": {
+        "title": "테스트 문서",
+        "content": "이것은 테스트 내용입니다."
+    },
+    "templateId": "test-template"
+}

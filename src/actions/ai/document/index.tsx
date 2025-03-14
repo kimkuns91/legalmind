@@ -1,4 +1,4 @@
-import { createPDF, uploadPDFToS3 } from './create-document';
+import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda';
 import { createStreamableValue, getMutableAIState } from 'ai/rsc';
 
 import { ClientMessage } from '../types';
@@ -10,7 +10,13 @@ import { generateId } from 'ai';
 import { generateObject } from 'ai';
 import { loadTemplateById } from '@/lib/templates/templateLoader';
 import { templateIndex } from '@/lib/templates/templateRegistry';
+import { uploadPDFToS3 } from './create-document';
 import { z } from 'zod';
+
+// Lambda 클라이언트 초기화
+const lambda = new LambdaClient({
+  region: process.env.AWS_REGION || 'ap-northeast-2',
+});
 
 // 문서 생성 상태 관리
 interface DocumentState {
@@ -35,7 +41,7 @@ export async function handleDocumentMode(
 
   // 스트리밍을 위한 설정
   const textStream = createStreamableValue('');
-  const display = <DocumentStatus stream={textStream.value} />;
+  const display = <DocumentStatus textStream={textStream.value} />;
 
   const updatedMessages = [...messages, { role: 'assistant', content: '', display }];
   history.update(updatedMessages);
@@ -90,7 +96,7 @@ export async function handleDocumentMode(
       return {
         id: generateId(),
         role: 'assistant',
-        display,
+        display: <Message role="assistant" content={newMessage.content} />,
       };
     }
 
@@ -279,10 +285,10 @@ export async function handleDocumentMode(
 
       const message = collectedParamsStr
         ? `현재까지 입력된 정보:\n${collectedParamsStr}\n\n추가로 필요한 정보:\n${missingParams
-            .map(param => `- ${getParamDisplayName(param)}`)
+            .map(param => `☑ ${getParamDisplayName(param)}`)
             .join('\n')}`
         : `아직 다음 정보가 필요합니다:\n\n${missingParams
-            .map(param => `- ${getParamDisplayName(param)}`)
+            .map(param => `☐ ${getParamDisplayName(param)}`)
             .join('\n')}`;
 
       const newMessage: ServerMessage = {
@@ -295,7 +301,7 @@ export async function handleDocumentMode(
       return {
         id: generateId(),
         role: 'assistant',
-        display,
+        display: <Message role="assistant" content={message} />,
       };
     }
   }
@@ -323,44 +329,128 @@ export async function handleDocumentMode(
     console.log('템플릿 로드 완료 ==================\n');
 
     textStream.update('PDF: PDF 파일을 생성하는 중...');
-    const pdfBytes = await createPDF({
-      template: template.content,
-      params: documentState.collectedParams,
-      templateId: documentState.templateId!,
-    });
+
+    // Lambda 함수 호출
+    const response = await lambda.send(
+      new InvokeCommand({
+        FunctionName: 'generatePDF',
+        InvocationType: 'RequestResponse',
+        Payload: JSON.stringify({
+          template: template.content,
+          params: documentState.collectedParams,
+          templateId: documentState.templateId,
+        }),
+      })
+    );
+
+    // Lambda 응답 처리 - 디버깅 로그 추가
+    console.log('Lambda 응답 페이로드 크기:', response.Payload?.length);
+    const result = JSON.parse(Buffer.from(response.Payload!).toString());
+    console.log('Lambda 응답 구조:', Object.keys(result));
+
+    if (result.statusCode !== 200) {
+      console.error('Lambda 오류 응답:', result);
+      throw new Error(result.body?.message || '문서 생성에 실패했습니다.');
+    }
+
+    // Base64 디코딩 전 로그 추가
+    console.log('PDF Base64 데이터 길이:', result.body?.length || 0);
+    if (result.body?.length > 0) {
+      console.log('PDF Base64 데이터 시작 부분:', result.body.substring(0, 50));
+    }
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const fileName = `${templateMetadata.name}_${timestamp}.pdf`;
 
-    textStream.update('완료: 문서 생성이 완료되었습니다!');
+    try {
+      // Base64 디코딩 수정 - 문자열 형태로 전달된 경우 처리
+      let pdfBytes;
 
-    textStream.update('생성된 문서를 저장하는 중...\n');
-    const pdfUrl = await uploadPDFToS3(pdfBytes, fileName);
+      // 문자열이 숫자 배열 형태인지 확인 (예: "37,80,68,70,45,...")
+      if (typeof result.body === 'string' && result.body.match(/^[\d,]+$/)) {
+        // 쉼표로 구분된 숫자 배열을 Uint8Array로 변환
+        pdfBytes = new Uint8Array(result.body.split(',').map(Number));
+        console.log('쉼표로 구분된 숫자 배열을 Uint8Array로 변환했습니다.');
+      } else {
+        // 일반적인 Base64 디코딩
+        pdfBytes = new Uint8Array(Buffer.from(result.body, 'base64'));
+        console.log('일반 Base64 디코딩을 수행했습니다.');
+      }
 
-    // 상태 초기화
-    documentState.templateId = null;
-    documentState.collectedParams = {};
-    documentState.requiredParams = [];
-    documentState.optionalParams = [];
+      // PDF 유효성 검사 (PDF 시그니처 확인)
+      console.log('디코딩된 PDF 바이트 길이:', pdfBytes.length);
+      console.log(
+        'PDF 시작 바이트:',
+        Array.from(pdfBytes.slice(0, 10))
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join(' ')
+      );
 
-    const newMessage: ServerMessage = {
-      role: 'assistant',
-      content: `문서가 성공적으로 생성되었습니다.\n\n[문서 다운로드](${pdfUrl.url})\n\n입력된 정보:\n${Object.entries(
-        documentState.collectedParams
-      )
-        .map(([key, value]) => `- ${key}: ${value}`)
-        .join('\n')}`,
-    };
+      // PDF 시그니처 검증 (%PDF-)
+      if (
+        pdfBytes.length < 5 ||
+        pdfBytes[0] !== 0x25 || // %
+        pdfBytes[1] !== 0x50 || // P
+        pdfBytes[2] !== 0x44 || // D
+        pdfBytes[3] !== 0x46 || // F
+        pdfBytes[4] !== 0x2d // -
+      ) {
+        console.warn('PDF 시그니처 검증 실패:', Array.from(pdfBytes.slice(0, 10)));
+        console.warn('PDF 데이터가 유효하지 않을 수 있습니다. 직접 PDF 바이트를 구성합니다.');
 
-    const updatedMessages = [...messages, newMessage];
-    history.done(updatedMessages);
-    textStream.done();
+        // Lambda에서 반환된 데이터가 이미 바이트 배열 형태인 경우 처리
+        if (typeof result.body === 'string' && result.body.includes(',')) {
+          try {
+            // 첫 번째 바이트가 37(%)인지 확인
+            const firstBytes = result.body.split(',').slice(0, 5).map(Number);
+            if (
+              firstBytes[0] === 37 && // %
+              firstBytes[1] === 80 && // P
+              firstBytes[2] === 68 && // D
+              firstBytes[3] === 70 && // F
+              firstBytes[4] === 45 // -
+            ) {
+              // 유효한 PDF 시그니처를 가진 바이트 배열로 변환
+              pdfBytes = new Uint8Array(result.body.split(',').map(Number));
+              console.log('바이트 배열을 직접 변환했습니다.');
+            }
+          } catch (error) {
+            console.error('바이트 배열 변환 중 오류:', error);
+          }
+        }
+      }
 
-    return {
-      id: generateId(),
-      role: 'assistant',
-      display,
-    };
+      textStream.update('완료: 문서 생성이 완료되었습니다!');
+      textStream.update('생성된 문서를 저장하는 중...\n');
+
+      const pdfUrl = await uploadPDFToS3(pdfBytes, fileName);
+
+      // 상태 초기화
+      documentState.templateId = null;
+      documentState.collectedParams = {};
+      documentState.requiredParams = [];
+      documentState.optionalParams = [];
+
+      const newMessage: ServerMessage = {
+        role: 'assistant',
+        content: `문서가 성공적으로 생성되었습니다.\n\n# [문서 다운로드](${pdfUrl.url})`,
+      };
+
+      const updatedMessages = [...messages, newMessage];
+      history.done(updatedMessages);
+      textStream.done();
+
+      return {
+        id: generateId(),
+        role: 'assistant',
+        display: <Message role="assistant" content={newMessage.content} />,
+      };
+    } catch (error) {
+      console.error('PDF 처리 중 오류:', error);
+      throw new Error(
+        `PDF 처리 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`
+      );
+    }
   } catch (error) {
     console.error('문서 생성 중 오류 발생:', error);
     textStream.update('오류: 문서 생성 중 오류가 발생했습니다.');
@@ -369,7 +459,15 @@ export async function handleDocumentMode(
     return {
       id: generateId(),
       role: 'assistant',
-      display,
+      display: (
+        <Message
+          role="assistant"
+          content={{
+            type: 'text',
+            text: '죄송합니다. 문서 생성 중 오류가 발생했습니다.',
+          }}
+        />
+      ),
     };
   } finally {
     console.log('문서 생성 프로세스 종료 ==================\n');

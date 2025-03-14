@@ -7,21 +7,15 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 const S3_CONFIG = {
   region: process.env.AWS_REGION || 'ap-northeast-2',
   bucket: process.env.AWS_BUCKET_NAME || 'whitemousedev-legal-documents',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
 };
+
 // S3 클라이언트 초기화
 console.log('S3 클라이언트 초기화...');
 console.log('설정된 리전:', S3_CONFIG.region);
 console.log('설정된 버킷:', S3_CONFIG.bucket);
-console.log('액세스 키 ID 존재 여부:', !!process.env.AWS_ACCESS_KEY_ID);
-console.log('시크릿 키 존재 여부:', !!process.env.AWS_SECRET_ACCESS_KEY);
 
 const s3Client = new S3Client({
   region: S3_CONFIG.region,
-  credentials: S3_CONFIG.credentials,
 });
 
 export async function uploadPDFToS3(pdfBytes: Uint8Array, fileName: string) {

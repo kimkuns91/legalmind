@@ -1,11 +1,15 @@
+'use client';
+
 import { StreamableValue, useStreamableValue } from 'ai/rsc';
 
+import React from 'react';
+
 interface IDocumentStatusProps {
-  stream: StreamableValue;
+  textStream: StreamableValue;
 }
 
-const DocumentStatus: React.FC<IDocumentStatusProps> = ({ stream }) => {
-  const value = useStreamableValue(stream);
+const DocumentStatus: React.FC<IDocumentStatusProps> = ({ textStream }) => {
+  const [value] = useStreamableValue(textStream);
 
   return (
     <div className="space-y-4 rounded-lg border border-gray-200 p-4">
@@ -69,4 +73,5 @@ const DocumentStatus: React.FC<IDocumentStatusProps> = ({ stream }) => {
     </div>
   );
 };
+
 export default DocumentStatus;

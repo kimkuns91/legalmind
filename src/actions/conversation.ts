@@ -147,7 +147,7 @@ export async function getConversation(roomId: string): Promise<ServerMessage[]> 
       throw new Error('대화를 찾을 수 없습니다.');
     }
 
-    const messages: ServerMessage[] = conversation.messages.map(msg => ({
+    const messages: ServerMessage[] = conversation.messages.map((msg: any) => ({
       role: msg.role as 'user' | 'assistant' | 'tool',
       content: msg.content as IMessageContent[] | string,
     }));
