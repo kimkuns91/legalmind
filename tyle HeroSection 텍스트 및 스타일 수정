@@ -1,0 +1,23 @@
+[1mdiff --git a/src/components/home/HeroSection.tsx b/src/components/home/HeroSection.tsx[m
+[1mindex 9cb5567..8ae0373 100644[m
+[1m--- a/src/components/home/HeroSection.tsx[m
+[1m+++ b/src/components/home/HeroSection.tsx[m
+[36m@@ -16,13 +16,14 @@[m [mexport default function HeroSection() {[m
+         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">[m
+           {/* 텍스트 섹션 */}[m
+           <div className="max-w-2xl">[m
+[31m-            <h1 className="mb-6 text-4xl leading-tight font-bold text-gray-900 md:text-5xl lg:text-6xl">[m
+[31m-              AI 기술로 더 쉽고 빠른 <br />[m
+[32m+[m[32m            <h1 className="mb-6 text-4xl leading-tight font-bold text-gray-900 md:text-5xl lg:text-5xl">[m
+[32m+[m[32m              음성인식 기술로 더 쉽고 빠른 <br />[m
+               <span className="text-[#F58733]">법률 문서 작성</span>[m
+             </h1>[m
+             <p className="mb-8 text-xl text-gray-600">[m
+[31m-              복잡한 법률 문제, 이제 <span className="font-bold text-[#F58733]">해주세요</span>와[m
+[31m-              함께 해결하세요. 24시간 언제든지 전문적인 법률 상담을 받을 수 있습니다.[m
+[32m+[m[32m              복잡한 법률 문서 작성, 이제 <span className="font-bold text-[#F58733]">해주세요</span>[m
+[32m+[m[32m              와 함께 해결하세요. 24시간 어디서나 법률적 효력을 지닌 문서를 생성 검토 받을 수[m
+[32m+[m[32m              있습니다.[m
+             </p>[m
+             <div className="flex flex-col gap-4 sm:flex-row">[m
+               <Button asChild size="lg" className="bg-[#F58733] text-white hover:bg-[#E07722]">[m

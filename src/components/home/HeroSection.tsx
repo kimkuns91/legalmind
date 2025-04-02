@@ -16,13 +16,14 @@ export default function HeroSection() {
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
           {/* 텍스트 섹션 */}
           <div className="max-w-2xl">
-            <h1 className="mb-6 text-4xl leading-tight font-bold text-gray-900 md:text-5xl lg:text-6xl">
-              AI 기술로 더 쉽고 빠른 <br />
+            <h1 className="mb-6 text-4xl leading-tight font-bold text-gray-900 md:text-5xl lg:text-5xl">
+              음성인식 기술로 더 쉽고 빠른 <br />
               <span className="text-[#F58733]">법률 문서 작성</span>
             </h1>
             <p className="mb-8 text-xl text-gray-600">
-              복잡한 법률 문제, 이제 <span className="font-bold text-[#F58733]">해주세요</span>와
-              함께 해결하세요. 24시간 언제든지 전문적인 법률 상담을 받을 수 있습니다.
+              복잡한 법률 문서 작성, 이제 <span className="font-bold text-[#F58733]">해주세요</span>
+              와 함께 해결하세요. 24시간 어디서나 법률적 효력을 지닌 문서를 생성 검토 받을 수
+              있습니다.
             </p>
             <div className="flex flex-col gap-4 sm:flex-row">
               <Button asChild size="lg" className="bg-[#F58733] text-white hover:bg-[#E07722]">
